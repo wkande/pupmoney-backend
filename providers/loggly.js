@@ -4,6 +4,7 @@ const debug = require('debug')('pup:loggly.js');
 debug('--> ...INIT');
 debug('-->', process.env.NODE_ENV);
 
+
 /**
  * Sends a single error object to a loggly service
  * @param object      - msg object with error
@@ -12,7 +13,7 @@ module.exports.error = function (obj) {
     try{
         obj.type = 'error';
         if(process.env.NODE_ENV=='production'){
-            send('error', obj);
+            send(obj);
         }  
         else{
             send('error', obj);
@@ -21,8 +22,10 @@ module.exports.error = function (obj) {
         }
     }
     catch(err){
+        // If this fails do not want to blow up the server.
+        // Just ouptut to console.
         console.log('===== module.exports.error =====');
-        console.log(err); // If this fails we do not want to blow up the server
+        console.log(err); 
     }
 };
 
@@ -43,8 +46,10 @@ module.exports.info = function (obj) {
         }
     }
     catch(err){
+        // If this fails do not want to blow up the server.
+        // Just ouptut to console.
         console.log('===== module.exports.info =====');
-        console.log(err); // If this fails we do not want to blow up the server
+        console.log(err);
     }
 };
 
@@ -58,12 +63,12 @@ let lastObj;
 /**
  * Sends the message to loggly. Repeated messages are not allowed to prevent 
  * log over-run.
- * @param obj           - message with location, type and others
+ * @param obj   - message with location, type and others
  */
-function send(type, obj){
+function send(obj){
     // Prevent log over-run
     if(lastObj === JSON.stringify(obj)){
-        ; // console.log('NOT LOGGING TO LOGGLY')
+        debug('NOT LOGGING TO LOGGLY')
         return;
     }
     lastObj = JSON.stringify(obj);
