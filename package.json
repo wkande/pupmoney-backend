@@ -1,0 +1,31 @@
+{
+  "name": "pup-moneybackend",
+  "version": "1.0.4",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "mocha"
+  },
+  "engines": {
+    "node": ">= 11.6.0"
+  },
+  "dependencies": {
+    "base-64": "^0.1.0",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "hash.js": "^1.1.5",
+    "jsonwebtoken": "^8.3.0",
+    "morgan": "~1.9.0",
+    "pg": "^7.6.1",
+    "sendmail": "^1.4.1"
+  },
+  "devDependencies": {
+    "mocha": "^6.0.2",
+    "should": "^13.2.3",
+    "supertest": "^3.3.0"
+  },
+  "author": "Warren Anderson",
+  "license": "Copyright 2019 Wyoming Software, Inc. All rights reserved"
+}
