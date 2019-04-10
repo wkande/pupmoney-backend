@@ -5,10 +5,10 @@
 
 var express = require('express');
 var router = express.Router();
-var debug = require('debug')('backend:server');
 const POSTGRESQL = require('../../providers/postgresql');
 const postgresql = new POSTGRESQL();
 var utils = require('../../providers/utils');
+const debug = require('debug')('pup:user.js');
 const loggly = require('../../providers/loggly');
 
 
@@ -24,7 +24,7 @@ router.get('/', function(req, res, next) {
     try{
         async function getUser() {
             try{
-        console.log('get user', req.pupUser.id)
+                debug('user.js get', req.pupUser.id);
                 // CHECK IF USER EXISTS
                 let query = { 
                     name: 'user-get-bearer',
@@ -90,6 +90,7 @@ router.post('/', function(req, res, next) {
 
         async function addUser() {
             try{
+                debug('user.js post', req.body);
                 // DELETE CODE //
                 var queryCode = {
                     name: 'code-delete',
