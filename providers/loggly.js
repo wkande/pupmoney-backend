@@ -1,13 +1,20 @@
+/**
+ * Sends errors and info messages to Loggly.
+ * @path providers/loggly.js
+ * @namespace Loggly
+ * @see https://www.loggly.com
+ */
+
+
 const https = require('https');
 const debug = require('debug')('pup:loggly.js');
-
 debug('--> ...INIT');
-debug('-->', process.env.NODE_ENV);
 
 
 /**
- * Sends a single error object to a loggly service
- * @param object      - msg object with error
+ * @summary Sends a single error object to a loggly service
+ * @memberof Loggly
+ * @param {object} obj - message object with error
  */
 module.exports.error = function (obj) { 
     try{
@@ -31,8 +38,9 @@ module.exports.error = function (obj) {
 
 
 /**
- * Sends a single info object to a loggly service. Used for information messages in the code.
- * @param object        - msg object with info
+ * @summary Sends a single info object to a loggly service. Used for information messages in the code.
+ * @memberof Loggly
+ * @param {object} obj - message object with information
  */
 module.exports.info = function (obj) { 
     try{
@@ -55,15 +63,18 @@ module.exports.info = function (obj) {
 
 
 /**
- * Remember the last obj sent to loggly. Used to prevent log over-run.
+ * @summary Remember the last object sent to loggly. Used to prevent log over-run.
+ * @memberof Loggly
+ * @var {object} lastObj
  */
 let lastObj;
 
 
 /**
- * Sends the message to loggly. Repeated messages are not allowed to prevent 
+ * @summary Sends the message to loggly. Repeated messages are not allowed to prevent 
  * log over-run.
- * @param obj   - message with location, type and others
+ * @memberof Loggly
+ * @param {object} obj - message with location, type and others
  */
 function send(obj){
     // Prevent log over-run
