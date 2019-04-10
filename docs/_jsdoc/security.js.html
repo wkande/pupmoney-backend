@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: security.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: security.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Provides all security for routes as implemented in the app.js file.
+ * @namespace Security
+ */
+
+
+const debug = require('debug')('pup:security.js');
+const jwt = require('jsonwebtoken');
+const utils = require('./utils');
+const loggly = require('./loggly');
+debug('--> ...INIT');
+
+
+/**
+ * Class to export.
+ * @memberof Security
+ */
+function SECURITY(){}
+
+
+/**
+ * @summary Protects the /wallet path.
+ * @description Adds the decoded JWT token to the request.
+ * Checks the wallet_id in the header against the allowed wallet_ids in the JWT token.
+ * Returns a 403 if token is not verified.
+ * 
+ * &lt;p>Extracted from parameters&lt;/p>
+ * &lt;ul>&lt;li>req.pupWallet&lt;/li>&lt;/ul>
+ * 
+ * @param {object} req - http request
+ * @param {object} req - http response
+ * @param {object} next - express forward
+ * @memberof Security
+ */
+SECURITY.prototype.walletCheck = function(req, res, next){
+    try{
+        debug('\n------> Running WALLET Check &lt;------');
+        let arr = req.headers.authorization.split(' ');
+        jwt.verify(arr[1], utils.jwtSecret, function(err, decoded) {
+            if(err){
+                console.log(err)
+                let msg = {statusCode:403, 
+                    statusMessage:'Invalid access, please login.',
+                    err:err,
+                    location:'security.js walletCheck evaluate'
+                };
+                loggly.error('Unknown email', msg);
+                res.status(403).send(msg);
+            }
+            else{
+                req.pupUser = decoded;
+                // As part of security the wallet for all calls accessing a wallet's child tables must be in the header.
+                req.pupWallet = JSON.parse(req.headers.wallet);
+                // Does the wallet_id (from header) exists in the token for wallets.
+                for(var i=0; i&lt;decoded.wallets.length;i++){
+                    if(req.pupWallet.id == decoded.wallets[i].id){
+                        next();
+                        return;
+                    }
+                }
+                for(var i=0; i&lt;decoded.sharedWallets.length;i++){
+                    if(req.pupUser == decoded.sharedWallets[i].id){
+                        next();
+                        return;
+                    }
+                }
+                // If we get here the wallet_id is unauthorized
+                let msg = {statusCode:'401', statusMsg:'Access to the wallet_id is not authorized',
+                        location:'WALLET security evaluate',
+                        note:'Invalid wallet ID.'
+                    };
+                loggly.error(msg);
+                res.status(400).send(msg);
+            }
+        });
+    }
+    catch(err){
+        let msg = {statusCode:'400', statusMsg:err.toString(),
+                location:'WALLET security evaluate',
+                note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
+            };
+        loggly.error(msg);
+        res.status(400).send(msg);
+    }
+};
+
+
+/**
+ * @summary Protects the /user* path by verifing the JWT token that was passed in AUTH Bearer.
+ * @description Returns a 403 if token is not verified.
+ * 
+ * &lt;p>Extracted from parameters&lt;/p>
+ * &lt;ul>&lt;li>req.headers.authorization&lt;/li>&lt;/ul>
+ * 
+ * @param {object} req - http request
+ * @param {object} req - http response
+ * @param {object} next - express forward
+ * @memberof Security
+ */
+SECURITY.prototype.userCheck = function(req, res, next){
+    try{
+        debug('\n------> Running USER Check &lt;------');
+        let arr = req.headers.authorization.split(' ');
+        jwt.verify(arr[1], utils.jwtSecret, function(err, decoded) {
+            if(err){
+                let msg = {statusCode:403, 
+                    statusMessage:'Invalid access, please login.',
+                    err:err,
+                    location:'security.js userCheck evaluate'
+                };
+                loggly.error('Unknown', msg);
+                res.status(403).send(msg);
+            }
+            else{
+                req.pupUser = decoded;
+                next();
+            }
+        });
+    }
+    catch(err){
+        let msg = {statusCode:'400', statusMsg:err.toString(),
+                    location:'USER security evaluate',
+                    note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
+                };
+        loggly.error(msg);
+        res.status(400).send(msg);
+    }
+};
+
+
+/**
+ * @summary Protects the /admin* path by verifing the JWT token that was passed in AUTH Bearer.
+ * @description Returns a 403 if token is not verified.
+ * 
+ * &lt;p>Extracted from parameters&lt;/p>
+ * &lt;ul>&lt;li>req.headers.authorization&lt;/li>&lt;/ul>
+ * 
+ * @param {object} req - http request
+ * @param {object} req - http response
+ * @param {object} next - express forward
+ * @memberof Security
+ */
+SECURITY.prototype.adminCheck = function(req, res, next){
+    try{
+        debug('\n------> Running ADMIN Check &lt;------');
+        let arr = req.headers.authorization.split(' ');
+        jwt.verify(arr[1], utils.jwtSecret, function(err, decoded) {
+            if(err){
+                let msg = {statusCode:403, 
+                    statusMessage:'Invalid access, please login.',
+                    err:err,
+                    location:'security.js adminCheck evaluate token'
+                };
+                loggly.error('Unknown', msg);
+                res.status(403).send(msg);
+            }
+            else{
+                if(decoded.sys_admin != 1){
+                    let msg = {statusCode:403, 
+                        statusMessage:'Not an admin, please login as an admin.',
+                        err:err,
+                        location:'security.js adminCheck evaluate admin'
+                    };
+                    loggly.error(msg);
+                    res.status(403).send(msg);
+                }
+                else{
+                    req.pupUser = decoded;
+                    next();
+                }
+            }
+        });
+    }
+    catch(err){
+        let msg = {statusCode:'400', statusMsg:err.toString(),
+                    location:'ADMIN security evaluate',
+                    note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
+                };
+        loggly.error(msg);
+        res.status(400).send(msg);
+    }
+}
+
+
+module.exports = SECURITY;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="Loggly.html">Loggly</a></li><li><a href="PostgreSQL.html">PostgreSQL</a></li><li><a href="Security.html">Security</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 10 2019 11:23:32 GMT-0600 (Mountain Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
