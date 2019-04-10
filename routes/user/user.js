@@ -3,11 +3,12 @@
  */
 
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const POSTGRESQL = require('../../providers/postgresql');
 const postgresql = new POSTGRESQL();
-var utils = require('../../providers/utils');
+const UTILS = require('../../providers/utils');
+const utils = new UTILS();
 const debug = require('debug')('pup:user.js');
 const loggly = require('../../providers/loggly');
 
@@ -45,7 +46,9 @@ router.get('/', function(req, res, next) {
                 res.status(200).send( {statusCode:200, statusMsg:"OK", user:user} );
             }
             catch(err){
-                res.status(500).send({statusCode:500, statusMsg:err.code+"-"+err.toString(), location:"user.get.query.execute"});
+                let msg = {statusCode:500, statusMsg:err.toString(), location:"user.get.query.execute"};
+                loggly.error(msg);
+                res.status(500).send(msg);
             }
         }
         getUser();
@@ -160,13 +163,17 @@ router.post('/', function(req, res, next) {
                 res.status(200).send( {statusCode:200, statusMsg:"OK", user:user} );
             }
             catch(err){
-                res.status(500).send({statusCode:500, statusMsg:err.toString(), location:"me.post.addUser.outer"});
+                let msg = {statusCode:500, statusMsg:err.toString(), location:"me.post.addUser.outer"};
+                loggly.error(msg);
+                res.status(500).send(msg);
             }
         }
         addUser();
     }
     catch(err){
-        res.status(500).send({statusCode:500, statusMsg:err.toString(), location:"me.get.outer"});
+        let msg = {statusCode:500, statusMsg:err.toString(), location:"me.get.outer"};
+        loggly.error(msg);
+        res.status(500).send(msg);
     }
 });
 

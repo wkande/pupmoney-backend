@@ -6,7 +6,8 @@
 
 const debug = require('debug')('pup:security.js');
 const jwt = require('jsonwebtoken');
-const utils = require('./utils');
+const UTILS = require('./utils');
+const utils = new UTILS();
 const loggly = require('./loggly');
 debug('--> ...INIT');
 
@@ -66,7 +67,7 @@ SECURITY.prototype.walletCheck = function(req, res, next){
                 }
                 // If we get here the wallet_id is unauthorized
                 let msg = {statusCode:'401', statusMsg:'Access to the wallet_id is not authorized',
-                        location:'WALLET security evaluate',
+                        location:'SECURITY.walletCheck.inner',
                         note:'Invalid wallet ID.'
                     };
                 loggly.error(msg);
@@ -76,7 +77,7 @@ SECURITY.prototype.walletCheck = function(req, res, next){
     }
     catch(err){
         let msg = {statusCode:'400', statusMsg:err.toString(),
-                location:'WALLET security evaluate',
+                location:'SECURITY.walletCheck.outer',
                 note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
             };
         loggly.error(msg);
@@ -119,7 +120,7 @@ SECURITY.prototype.userCheck = function(req, res, next){
     }
     catch(err){
         let msg = {statusCode:'400', statusMsg:err.toString(),
-                    location:'USER security evaluate',
+                    location:'SECURITY.userCheck',
                     note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
                 };
         loggly.error(msg);
@@ -173,9 +174,9 @@ SECURITY.prototype.adminCheck = function(req, res, next){
     }
     catch(err){
         let msg = {statusCode:'400', statusMsg:err.toString(),
-                    location:'ADMIN security evaluate',
-                    note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
-                };
+            location:'SECURITY.adminCheck',
+            note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
+        };
         loggly.error(msg);
         res.status(400).send(msg);
     }

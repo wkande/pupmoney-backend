@@ -12,12 +12,12 @@ const categoryRouter = require('./category');
 const expensesRouter = require('./expenses');
 const expenseRouter = require('./expense');
 const debug = require('debug')('pup:categories.js');
-const vendorsRouter = require('./vendors');
-const vendorRouter = require('./vendor');
+//const vendorsRouter = require('./vendors');
+//const vendorRouter = require('./vendor');
 
 
-router.use('/:cat_id/vendors', vendorRouter); // get, post, put, delete (vendor)
-router.use('/:cat_id/vendors', vendorsRouter); // get (vendors)
+//router.use('/:cat_id/vendors', vendorRouter); // get, post, put, delete (vendor)
+//router.use('/:cat_id/vendors', vendorsRouter); // get (vendors)
 
 
 // get (expenses) 

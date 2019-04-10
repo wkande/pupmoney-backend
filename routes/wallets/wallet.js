@@ -1,15 +1,16 @@
 /**
- * Provides all actions for a sinlge asset record.
+ * Provides all actions for a sinlge wallet record.
  */
 
 
-var express = require('express');
-var router = express.Router({mergeParams: true});
+const express = require('express');
+const router = express.Router({mergeParams: true});
 const POSTGRESQL = require('../../providers/postgresql');
 const postgresql = new POSTGRESQL();
 const loggly = require('../../providers/loggly');
 const debug = require('debug')('pup:wallet.js');
-var utils = require('../../providers/utils');
+const UTILS = require('../../providers/utils');
+const utils = new UTILS();
 
 
 /**
