@@ -3,13 +3,14 @@
  */
 
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const POSTGRESQL = require('../../providers/postgresql');
 const postgresql = new POSTGRESQL();
-var utils = require('../../providers/utils');
-let userModule = require('./user');
-var debug = require('debug')('pup:email.js');
+const UTILS = require('../../providers/utils');
+const utils = new UTILS();
+const userModule = require('./user');
+const debug = require('debug')('pup:email.js');
 const loggly = require('../../providers/loggly');
 
 
