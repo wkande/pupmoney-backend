@@ -52,15 +52,9 @@ SECURITY.prototype.walletCheck = function(req, res, next){
                 req.pupUser = decoded;
                 // As part of security the wallet for all calls accessing a wallet's child tables must be in the header.
                 req.pupWallet = JSON.parse(req.headers.wallet);
-                // Does the wallet_id (from header) exists in the token for wallets.
+                // Does the wallet_id (from header) exists in the wallets array inside the JWT token.
                 for(var i=0; i<decoded.wallets.length;i++){
                     if(req.pupWallet.id == decoded.wallets[i].id){
-                        next();
-                        return;
-                    }
-                }
-                for(var i=0; i<decoded.sharedWallets.length;i++){
-                    if(req.pupUser == decoded.sharedWallets[i].id){
                         next();
                         return;
                     }
