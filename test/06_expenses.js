@@ -22,7 +22,7 @@ describe('GET /expenses --> 06_expensess.js', function () {
                     obj.expenses.should.exist;
                     if(obj.expenses.length == 0)
                     {
-                        done(new Error('add an expense for category_id: (' +global.category_id+ ') to continue testing'));
+                        done(new Error('get expenses for category_id: (' +global.category_id+ ') to continue testing'));
                     }
                     else{
                         global.expense_id = obj.expenses[0].id;
@@ -132,3 +132,26 @@ describe('DELETE /expenses/:exp_id --> 06_expenses.js', function () {
 });
 
 
+/**
+ * Text search for expenses in all categories within a wallet.
+ */
+describe('GET /expenses/context --> 06_expensess.js', function () {
+    it('gets a list of expenses by text search', function (done) {
+        server
+            .get('/categories/'+global.category_id+'/expenses/context?q=rei&skip=0')
+            .set('Authorization', 'Bearer ' + global.token)
+            .set('wallet', JSON.stringify(global.wallet))
+            .expect(200)
+            .end(function (err, res) {
+                let obj = JSON.parse(res.text);
+                if (err) {console.log(obj.statusMsg); done(err);}
+                else{
+                    obj.statusCode.should.equal(200);
+                    obj.statusMsg.should.exist;
+                    res.status.should.equal(200);
+                    obj.expenses.should.exist;
+                    done();
+                }
+            });
+    });
+});
