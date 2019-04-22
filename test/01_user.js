@@ -7,6 +7,7 @@ var server = supertest.agent(url);
 var email = process.env.PUP_TEST_EMAIL;
 
 
+
 console.log("\n++++++++++++++ START TESTS +++++++++++++++++")
 describe("GET /ping --> 01_user.js ", function () {
   it("access ping", function (done) {

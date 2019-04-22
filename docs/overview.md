@@ -33,12 +33,15 @@ Tests for all endpoints are written with Mocha, Supertest and Should.
 
 By default the TESTS are run against a localhost URL which is set at the top of each file in the test directory.
 ``` javascript
+// From the test file 01_users.js
 const url = process.env.PUP_TEST_URL || 'http://192.168.0.14:3000';
 ```
 
 To run against a different DEV or STAGE url export an environment variable as PUP_TEST_URL.
 
 ```bash
+// mac dev
+export PUP_TEST_URL=http://192.168.0.14:3000
 // alternate dev
 export PUP_TEST_URL=http://192.168.3.14:3005
 // stage
@@ -98,6 +101,7 @@ List of avalable endpoint calls.
 - [GET /wallets/:wallet_id](./wallets/get_wallet.md)
 - [POST /wallets](./wallets/post_wallet.md)
 - [PATCH /wallets/:wallet_id](./wallets/patch_wallet.md)
+- [PATCH /wallets/:wallet_id/currency](./wallets/patch_wallet_currency.md)
 - [DELETE /wallets/:wallet_id](./wallets/delete_wallet.md)
 
 ### Vendors

@@ -11,8 +11,8 @@ Updates a wallet's currency percision.
 ##### Request
 ```javascript
 server
-.patch('/wallets/3')
-.send({ 'currency':'{percision:"1.2-2"}'
+.patch('/wallets/3/currency')
+.send({ 'currency':'{"curId": 2, "symbol": "", "decimal": ".", "precision": 2, "separator": ","}'
 })
 .set('Authorization', 'Bearer '  +  global.token)
 .set('Content-Type', 'application/x-www-form-urlencoded'
@@ -28,16 +28,18 @@ server
     "wallet": {
         "id": 1,
         "user_id": 1,
-        "shares": [
-            2,
-            4
-        ],
-        "name": "My new wallet name",
-        "currency": {
-            "percision": "1.2-2"
-        },
+        "shard": 2,
+        "shares": [],
+        "name": "Default Wallet",
         "default_wallet": 1,
-        "dttm": "2019-01-01T07:00:00.000Z"
+        "dttm": "2019-04-08T06:00:00.000Z",
+        "currency": {
+            "curId": 2,
+            "symbol": "",
+            "decimal": ".",
+            "precision": 2,
+            "separator": ","
+        }
     }
 }
 
