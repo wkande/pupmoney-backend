@@ -120,7 +120,7 @@ router.post('/', function(req, res, next) {
 
 
 /**
- * Updates a wallet.
+ * Updates a wallet's name and shares.
  * Returns a wallet object.
  * @param wallet_id - req.params.wallet_id
  * @param user_id - req.pupUser.id
@@ -154,6 +154,48 @@ router.patch('/:wallet_id', function(req, res, next) {
         }
         catch(err){
             let msg = {statusCode:500, statusMsg:err.toString(), location:"wallet.patch.patchWallet.outer"};
+            loggly.error(msg);
+            res.status(500).send(msg);
+        }
+    };
+    patchWallet();
+});
+
+
+/**
+ * Updates a wallet's currency percision.
+ * Returns a wallet object.
+ * @param wallet_id - req.params.wallet_id
+ * @param user_id - req.pupUser.id
+ * @param currency - req.body.curency
+ */
+router.patch('/:wallet_id/currency', function(req, res, next) {
+
+    async function patchWallet(){
+        try{
+            debug('wallet.js patch', req.params, req.body);
+            let wallet_id = req.params.wallet_id;
+            var query = {
+                name: 'wallet-patch',
+                text: `UPDATE wallets SET currency = $1
+                    WHERE user_id = $2 AND id = $3 RETURNING *`,
+                values: [req.body.currency, req.pupUser.id, wallet_id]
+            };
+            const data = await postgresql.shards[0].query(query);
+            if(data.rows.length == 0){
+                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for wallet_id: "+wallet_id, location:"wallet.patch.patchWallet > currency"};
+                loggly.error(msg);
+                res.status(400).send(msg);
+            }
+            else{ 
+                let returnObj = {statusCode:200, statusMsg:"OK", user_id:req.pupUser.id};
+                returnObj.rowCount = data.rowCount;
+                returnObj.wallet = data.rows[0];
+                res.status(200).send( returnObj );
+            }
+        }
+        catch(err){
+            let msg = {statusCode:500, statusMsg:err.toString(), location:"wallet.patch.patchWallet.outer > currency"};
             loggly.error(msg);
             res.status(500).send(msg);
         }
