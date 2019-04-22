@@ -37,7 +37,6 @@ SECURITY.prototype.walletCheck = function(req, res, next){
     try{
         debug('\n------> Running WALLET Check <------');
         let arr = req.headers.authorization.split(' ');
-        console.log(arr)
         jwt.verify(arr[1], utils.jwtSecret, function(err, decoded) {
             if(err){
                 let msg = {statusCode:403, 
@@ -52,7 +51,6 @@ SECURITY.prototype.walletCheck = function(req, res, next){
                 req.pupUser = decoded;
                 // As part of security the wallet for all calls accessing a wallet's child tables must be in the header.
                 req.pupWallet = JSON.parse(req.headers.wallet);
-                console.log(req.pupWallet)
                 // Wallet is missing
                 if(!req.pupWallet){
                     let msg = {statusCode:478, 
