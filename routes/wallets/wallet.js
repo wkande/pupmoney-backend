@@ -134,7 +134,7 @@ router.patch('/:wallet_id', function(req, res, next) {
             debug('wallet.js patch', req.params, req.body);
             let wallet_id = req.params.wallet_id;
             var query = {
-                name: 'wallet-patch',
+                name: 'wallet-patch-name-shares',
                 text: `UPDATE wallets SET name = $1, shares = $2
                     WHERE user_id = $3 AND id = $4 RETURNING *`,
                 values: [req.body.name, req.body.shares, req.pupUser.id, wallet_id]
@@ -176,7 +176,7 @@ router.patch('/:wallet_id/currency', function(req, res, next) {
             debug('wallet.js patch', req.params, req.body);
             let wallet_id = req.params.wallet_id;
             var query = {
-                name: 'wallet-patch',
+                name: 'wallet-patch-currency',
                 text: `UPDATE wallets SET currency = $1
                     WHERE user_id = $2 AND id = $3 RETURNING *`,
                 values: [req.body.currency, req.pupUser.id, wallet_id]
