@@ -39,40 +39,53 @@ SECURITY.prototype.walletCheck = function(req, res, next){
         let arr = req.headers.authorization.split(' ');
         jwt.verify(arr[1], utils.jwtSecret, function(err, decoded) {
             if(err){
-                console.log(err)
                 let msg = {statusCode:403, 
                     statusMessage:'Invalid access, please login.',
                     err:err,
                     location:'security.js walletCheck evaluate'
                 };
-                loggly.error('Unknown email', msg);
+                loggly.error(msg);
                 res.status(403).send(msg);
             }
             else{
                 req.pupUser = decoded;
                 // As part of security the wallet for all calls accessing a wallet's child tables must be in the header.
                 req.pupWallet = JSON.parse(req.headers.wallet);
-                // Does the wallet_id (from header) exists in the wallets array inside the JWT token.
-                for(var i=0; i<decoded.wallets.length;i++){
-                    if(req.pupWallet.id == decoded.wallets[i].id){
-                        next();
-                        return;
-                    }
-                }
-                // If we get here the wallet_id is unauthorized
-                let msg = {statusCode:'401', statusMsg:'Access to the wallet_id is not authorized',
-                        location:'SECURITY.walletCheck.inner',
-                        note:'Invalid wallet ID.'
+                // Wallet is missing
+                if(!req.pupWallet){
+                    let msg = {statusCode:478, 
+                        statusMessage:'Missing wallet, please logout and login again. Go to Settings',
+                        err:err,
+                        location:'security.js walletCheck evaluate request wallet'
                     };
-                loggly.error(msg);
-                res.status(400).send(msg);
+                    loggly.error(msg);
+                    res.status(478).send(msg);
+                }
+                else{
+                    
+                    // Does the wallet_id (from header) exists in the wallets array inside the JWT token.
+                    for(var i=0; i<decoded.wallets.length;i++){
+                        if(req.pupWallet.id == decoded.wallets[i].id){
+                            next();
+                            return;
+                        }
+                    }
+                    // If we get here the wallet_id is unauthorized
+                    let msg = {statusCode:'401', statusMsg:'Access to the wallet_id is not authorized',
+                            location:'SECURITY.walletCheck.inner',
+                            note:'Invalid wallet ID.'
+                        };
+                    loggly.error(msg);
+                    res.status(400).send(msg);
+                }
+                
             }
         });
     }
     catch(err){
         let msg = {statusCode:'400', statusMsg:err.toString(),
                 location:'SECURITY.walletCheck.outer',
-                note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
+                note:'Be sure to send the JWT token and the wallet.'
             };
         loggly.error(msg);
         res.status(400).send(msg);

@@ -1,10 +1,10 @@
 
 
-## PATCH /wallet/:wallet_id
-Updates a wallet's name and shares. 
+## PATCH /wallet/:wallet_id/currency
+Updates a wallet's currency percision. 
 
 - Headers: JWT, Content-Type (application/x-www-form-urlencoded)
-- Body: name, shares
+- Body: currency
 - Parameters: wallet_id
 - Query: none
 
@@ -12,8 +12,7 @@ Updates a wallet's name and shares.
 ```javascript
 server
 .patch('/wallets/3')
-.send({ 'name':'My new wallet name',
-        'shares':'{1,2,4}'
+.send({ 'currency':'{percision:"1.2-2"}'
 })
 .set('Authorization', 'Bearer '  +  global.token)
 .set('Content-Type', 'application/x-www-form-urlencoded'
