@@ -29,16 +29,18 @@ server
     "wallet": {
         "id": 1,
         "user_id": 1,
-        "shares": [
-            2,
-            4
-        ],
+        "shard": 2,
+        "shares": [1,2,4],
         "name": "My new wallet name",
-        "currency": {
-            "percision": "1.2-2"
-        },
         "default_wallet": 1,
-        "dttm": "2019-01-01T07:00:00.000Z"
+        "dttm": "2019-04-08T06:00:00.000Z",
+        "currency": {
+            "curId": 2,
+            "symbol": "",
+            "decimal": ".",
+            "precision": 2,
+            "separator": ","
+        }
     }
 }
 
