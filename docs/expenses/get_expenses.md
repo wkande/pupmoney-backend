@@ -1,6 +1,6 @@
 
 
-## GET /expenses/:exp_id/expenses
+## GET /categories/:cat_id/expenses
 Returns a list of all expenses from a category for the time period passed (dttmStart-dttmEnd) and the text search (q) which can be null, all three required.  The optional query parameter skip is used for pagination. Each endpoint call returns 50 rows as a limit, use skip to jump forward by setting a start point.
 
 - Headers: JWT, wallet
