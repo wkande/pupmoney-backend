@@ -22,10 +22,12 @@ const adminUsersRouter = require('./routes/admin-users');
 const codeRouter = require('./routes/code');
 const walletsRouter = require('./routes/wallets/wallets');
 const categoriesRouter = require('./routes/categories/categories');
-const expensesRouter = require('./routes/categories/expenses');
+const expensesRouter = require('./routes/expenses/expenses');
+//const expensesRouter = require('./routes/categories/expenses');
 const POSTGRESQL = require('./providers/postgresql');
 const postgresql = new POSTGRESQL();
-const security = require('./providers/security');
+const SECURITY = require('./providers/security');
+const security = new SECURITY();
 const app = express();
 const loggly = require('./providers/loggly');
 loggly.info('STARTUP', {startup:new Date()});
@@ -52,7 +54,7 @@ app.use(bodyParser.json());
 
 // ****** SECURITY ROUTES ******* //
 app.use('/categories*', (req, res, next) => security.walletCheck(req, res, next));
-app.use('/expenses*', (req, res, next) => security.walletCheck(req, res, next)); // Text search
+app.use('/expenses*', (req, res, next) => security.walletCheck(req, res, next)); // Text search, expenses list (no cat) 
 app.use('/wallet*', (req, res, next) => security.userCheck(req, res, next));
 app.use('/user*', (req, res, next) => security.userCheck(req, res, next));
 app.use('/admin*', (req, res, next) => security.adminCheck(req, res, next));
@@ -63,7 +65,8 @@ app.use('/admin*', (req, res, next) => security.adminCheck(req, res, next));
 // This is the only route for /expenses, all others must go thru /categories.
 app.use('/expenses', expensesRouter); // Text search only
 
-app.use('/categories', categoriesRouter);
+app.use('/categories', categoriesRouter); // Contains all /categories/:cat_id/expenses routes
+app.use('/expenses', expensesRouter); // No category
 app.use('/wallets', walletsRouter);
 app.use('/code', codeRouter);
 app.use('/user', userRouter);

@@ -1,6 +1,6 @@
 {
   "name": "pup-moneybackend",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
@@ -22,6 +22,7 @@
     "sendmail": "^1.4.1"
   },
   "devDependencies": {
+    "jsdoc": "^3.5.5",
     "mocha": "^6.0.2",
     "should": "^13.2.3",
     "supertest": "^3.3.0"

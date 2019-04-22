@@ -1,15 +1,16 @@
 /**
- * Provides all actions for a sinlge asset record.
+ * Provides all actions for a sinlge wallet record.
  */
 
 
-var express = require('express');
-var router = express.Router({mergeParams: true});
+const express = require('express');
+const router = express.Router({mergeParams: true});
 const POSTGRESQL = require('../../providers/postgresql');
 const postgresql = new POSTGRESQL();
 const loggly = require('../../providers/loggly');
 const debug = require('debug')('pup:wallet.js');
-var utils = require('../../providers/utils');
+const UTILS = require('../../providers/utils');
+const utils = new UTILS();
 
 
 /**
@@ -119,7 +120,7 @@ router.post('/', function(req, res, next) {
 
 
 /**
- * Updates a wallet.
+ * Updates a wallet's name and shares.
  * Returns a wallet object.
  * @param wallet_id - req.params.wallet_id
  * @param user_id - req.pupUser.id
@@ -133,7 +134,7 @@ router.patch('/:wallet_id', function(req, res, next) {
             debug('wallet.js patch', req.params, req.body);
             let wallet_id = req.params.wallet_id;
             var query = {
-                name: 'wallet-patch',
+                name: 'wallet-patch-name-shares',
                 text: `UPDATE wallets SET name = $1, shares = $2
                     WHERE user_id = $3 AND id = $4 RETURNING *`,
                 values: [req.body.name, req.body.shares, req.pupUser.id, wallet_id]
@@ -153,6 +154,48 @@ router.patch('/:wallet_id', function(req, res, next) {
         }
         catch(err){
             let msg = {statusCode:500, statusMsg:err.toString(), location:"wallet.patch.patchWallet.outer"};
+            loggly.error(msg);
+            res.status(500).send(msg);
+        }
+    };
+    patchWallet();
+});
+
+
+/**
+ * Updates a wallet's currency percision.
+ * Returns a wallet object.
+ * @param wallet_id - req.params.wallet_id
+ * @param user_id - req.pupUser.id
+ * @param currency - req.body.curency
+ */
+router.patch('/:wallet_id/currency', function(req, res, next) {
+
+    async function patchWallet(){
+        try{
+            debug('wallet.js patch', req.params, req.body);
+            let wallet_id = req.params.wallet_id;
+            var query = {
+                name: 'wallet-patch-currency',
+                text: `UPDATE wallets SET currency = $1
+                    WHERE user_id = $2 AND id = $3 RETURNING *`,
+                values: [req.body.currency, req.pupUser.id, wallet_id]
+            };
+            const data = await postgresql.shards[0].query(query);
+            if(data.rows.length == 0){
+                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for wallet_id: "+wallet_id, location:"wallet.patch.patchWallet > currency"};
+                loggly.error(msg);
+                res.status(400).send(msg);
+            }
+            else{ 
+                let returnObj = {statusCode:200, statusMsg:"OK", user_id:req.pupUser.id};
+                returnObj.rowCount = data.rowCount;
+                returnObj.wallet = data.rows[0];
+                res.status(200).send( returnObj );
+            }
+        }
+        catch(err){
+            let msg = {statusCode:500, statusMsg:err.toString(), location:"wallet.patch.patchWallet.outer > currency"};
             loggly.error(msg);
             res.status(500).send(msg);
         }

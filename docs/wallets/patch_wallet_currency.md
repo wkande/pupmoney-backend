@@ -1,19 +1,18 @@
 
 
-## PATCH /wallet/:wallet_id
-Updates a wallet's name and shares. 
+## PATCH /wallet/:wallet_id/currency
+Updates a wallet's currency percision. 
 
 - Headers: JWT, Content-Type (application/x-www-form-urlencoded)
-- Body: name, shares
+- Body: currency
 - Parameters: wallet_id
 - Query: none
 
 ##### Request
 ```javascript
 server
-.patch('/wallets/3')
-.send({ 'name':'My new wallet name',
-        'shares':'{1,2,4}'
+.patch('/wallets/3/currency')
+.send({ 'currency':'{"curId": 2, "symbol": "", "decimal": ".", "precision": 2, "separator": ","}'
 })
 .set('Authorization', 'Bearer '  +  global.token)
 .set('Content-Type', 'application/x-www-form-urlencoded'
@@ -30,8 +29,8 @@ server
         "id": 1,
         "user_id": 1,
         "shard": 2,
-        "shares": [1,2,4],
-        "name": "My new wallet name",
+        "shares": [],
+        "name": "Default Wallet",
         "default_wallet": 1,
         "dttm": "2019-04-08T06:00:00.000Z",
         "currency": {

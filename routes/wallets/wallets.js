@@ -1,5 +1,5 @@
 /**
- * Provides all actions for multiple asset records.
+ * Provides all actions for multiple wallet records.
  */
  
 
