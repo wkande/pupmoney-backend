@@ -1,5 +1,5 @@
 /**
- * Manages a individual user account.
+ * Manages an individual user account.
  */
 
 
@@ -67,7 +67,7 @@ async function getWallets(user_id) {
     return new Promise((response, reject) => {
         var queryWallets = {
             name: 'wallets-get',
-            text: `SELECT w.id, w.name, u.id owner_id, u.name owner_name, u.email owner_email, w.dttm, w.default_wallet, w.shard
+            text: `SELECT w.id, w.name, w.currency, u.id owner_id, u.name owner_name, u.email owner_email, w.dttm, w.default_wallet, w.shard
             FROM USERS u JOIN WALLETS w  
             ON w.user_id = u.id WHERE u.id = $1 OR $1 = ANY (shares)`,
             values: [user_id]
@@ -80,6 +80,8 @@ async function getWallets(user_id) {
 /** 
  * Creates a new user if one does not exist. The endpoint is used for the 
  * passwordless access to Pupmony. A code must have been requested prior to this call.
+ * Creates a default wallet where the curency.percision key will be set to null. The caller 
+ * must set the percision later for the default wallet.
  * @param email   - req.body.email
  * @param code    - req.body.code;
  * 
@@ -116,6 +118,7 @@ router.post('/', function(req, res, next) {
                 const userExistsRef = await postgresql.shards[0].query(queryUserExists);
                 if (userExistsRef.rowCount == 1){
                     user = userExistsRef.rows[0];
+                    user.newAccount = false;
                 }
 
                 // POST A NEW USER IF NEEDED
@@ -136,6 +139,7 @@ router.post('/', function(req, res, next) {
                             return;
                         }
                         user = insertRef.rows[0].add_user;
+                        user.newAccount = true;
 
                         // Get wallets (temporary)
                         const walletsRef = await getWallets(user.id);
