@@ -77,14 +77,36 @@ describe('POST /wallet --> 02_wallets.js', function () {
 
 
 describe('PATCH /wallets/:id --> 02_wallet.js', function () {
-    it('patch a wallet id: ', function (done) {
+    it('patch name and shares on a wallet id: ', function (done) {
         let body = {};
         server
             .patch('/wallets/'+global.temp_wallet_id)
             .send({ 'name':'My new wallet name', 
-                    'shares':'{1,2,4}', 
-                    'country_code':'it-IT', 
-                    'currency_options':'{"style": "currency", "currency": "EUR", "minimumFractionDigits": 2}'
+                    'shares':'{1,2,4}'
+            })
+            .set('Authorization', 'Bearer ' + global.token)
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .expect(200)
+            .end(function (err, res) {
+                let obj = JSON.parse(res.text);
+                if (err) {console.log(obj.statusMsg); done(err);}
+                else{
+                    obj.statusCode.should.equal(200);
+                    obj.statusMsg.should.exist;
+                    res.status.should.equal(200);
+                    obj.wallet.id.should.exist;
+                    done();
+                }
+            });
+    });
+});
+
+describe('PATCH /wallets/:id/currency --> 02_wallet.js', function () {
+    it('patch currency on a wallet id: ', function (done) {
+        let body = {};
+        server
+            .patch('/wallets/'+global.temp_wallet_id+'/currency')
+            .send({ 'currency':'{"curId": 2, "symbol": "", "decimal": ".", "precision": 2, "separator": ","}'
             })
             .set('Authorization', 'Bearer ' + global.token)
             .set('Content-Type', 'application/x-www-form-urlencoded')
