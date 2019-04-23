@@ -129,6 +129,8 @@ List of avalable endpoint calls.
 ### Expenses
 
  - [GET /categories/:cat_id/expenses](./expenses/get_expenses.md)
+ - [GET /expenses](./expenses/get_expenses_no_categories.md)
+ - [GET /expenses/context](./expenses/get_expenses_context.md)
  - [GET /categories/:cat_id/expenses/:exp_id](./expenses/get_expense.md)
  - [POST /categories/:cat_id/expenses](./expenses/post_expense.md)
  - [PUT /categories/:cat_id/expenses/:exp_id](./expenses/put_expense_item.md)
