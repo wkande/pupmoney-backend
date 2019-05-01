@@ -1,17 +1,17 @@
 
 
-## GET /expenses
-Returns a list of all expenses for the time period passed (dttmStart-dttmEnd) and the text search (q) which can be null, all three required.  The optional query parameter skip is used for pagination. Each endpoint call returns 50 rows as a limit, use skip to jump forward by setting a start point.
+## GET /expenses/context
+Returns a list of expenses using a text search.  The optional query parameter skip is used for pagination. Each endpoint call returns 50 rows as a limit, use skip to jump forward by setting a start point.
 
 - Headers: JWT, wallet
 - Body: none
 - Parameters: none
-- Query: q, dttmStart, dttmEnd, skip
+- Query: q skip
 
 ##### Request
 ```javascript
 server
-.get('/expenses/?q=&dttmStart=2010-01-23&dttmEnd=2020-12-12&skip=50')
+.get('/expenses/context?q=target&skip=50')
 .set('Authorization', 'Bearer '  +  token)
 .set('wallet', wallet)
 ```

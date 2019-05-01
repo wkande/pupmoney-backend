@@ -53,13 +53,13 @@ SECURITY.prototype.walletCheck = function(req, res, next){
                 req.pupWallet = JSON.parse(req.headers.wallet);
                 // Wallet is missing
                 if(!req.pupWallet){
-                    let msg = {statusCode:478, 
-                        statusMessage:'Missing wallet, please logout and login again. Go to Settings',
+                    let msg = {statusCode:403, 
+                        statusMessage:'Missing wallet, please login again.',
                         err:err,
                         location:'security.js walletCheck evaluate request wallet'
                     };
                     loggly.error(msg);
-                    res.status(478).send(msg);
+                    res.status(403).send(msg);
                 }
                 else{
                     

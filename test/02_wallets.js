@@ -53,9 +53,8 @@ describe('POST /wallet --> 02_wallets.js', function () {
         server
             .post('/wallets')
             .send({ 'name':'My new wallet', 
-                    'shares':'{1,2,4}', 
-                    'country_code':'en-US', 
-                    'currency_options':'{"style": "currency", "currency": "USD", "minimumFractionDigits": 2}'
+                    'shares':'{}', 
+                    'currency':'{"curId": 2, "symbol": "", "decimal": ".", "precision": 2, "separator": ","}'
             })
             .set('Authorization', 'Bearer ' + global.token)
             .set('Content-Type', 'application/x-www-form-urlencoded')
@@ -82,7 +81,8 @@ describe('PATCH /wallets/:id --> 02_wallet.js', function () {
         server
             .patch('/wallets/'+global.temp_wallet_id)
             .send({ 'name':'My new wallet name', 
-                    'shares':'{1,2,4}'
+                    'shares':'{1,2,4}',
+                    'currency':'{"curId": 2, "symbol": "", "decimal": ".", "precision": 2, "separator": ","}'
             })
             .set('Authorization', 'Bearer ' + global.token)
             .set('Content-Type', 'application/x-www-form-urlencoded')

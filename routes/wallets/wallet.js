@@ -65,6 +65,7 @@ router.get('/:wallet_id', function(req, res, next) {
  * @param user_id - req.pupUser.id
  * @param name - req.body.name
  * @param shares - req.body.shares
+ * @param currency - req.body.currency
  */
 router.post('/', function(req, res, next) {
 
@@ -79,8 +80,8 @@ router.post('/', function(req, res, next) {
             // Create wallet
             var query = {
                 name: 'wallet-post',
-                text: `INSERT INTO wallets (user_id, name, shares, shard) VALUES($1, $2, $3, $4) RETURNING *`,
-                values: [req.pupUser.id, req.body.name, req.body.shares, nextShard]
+                text: `INSERT INTO wallets (user_id, name, shares, shard, currency) VALUES($1, $2, $3, $4, $5) RETURNING *`,
+                values: [req.pupUser.id, req.body.name, req.body.shares, nextShard, req.body.currency]
             };
             const data = await postgresql.shards[0].query(query);
             if(data.rows.length == 0){
@@ -126,6 +127,7 @@ router.post('/', function(req, res, next) {
  * @param user_id - req.pupUser.id
  * @param name - req.body.name
  * @param shares - req.body.shares
+ * @param currency - req.body.currency
  */
 router.patch('/:wallet_id', function(req, res, next) {
 
@@ -135,9 +137,9 @@ router.patch('/:wallet_id', function(req, res, next) {
             let wallet_id = req.params.wallet_id;
             var query = {
                 name: 'wallet-patch-name-shares',
-                text: `UPDATE wallets SET name = $1, shares = $2
+                text: `UPDATE wallets SET name = $1, shares = $2, currency = $5
                     WHERE user_id = $3 AND id = $4 RETURNING *`,
-                values: [req.body.name, req.body.shares, req.pupUser.id, wallet_id]
+                values: [req.body.name, req.body.shares, req.pupUser.id, wallet_id, req.body.currency]
             };
             const data = await postgresql.shards[0].query(query);
             if(data.rows.length == 0){

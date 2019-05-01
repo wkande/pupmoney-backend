@@ -31,7 +31,7 @@ export NODE_ENV=
 
 Startup for development.
 ```bash
-DEBUG=backend:* npm start
+DEBUG=pup:* npm start
 ```
 
 

@@ -23,13 +23,13 @@ const loggly = require('../../providers/loggly');
  * Returns new user object with a new JWT token and.
  */
 router.patch('/', function(req, res, next) {
-    debug('name.js get', req.body);
+    debug('name.js patch', req.body.name);
     async function updateName() {
         try{
 
             // UPDATE NAME
             var query2 = {
-                name: 'user-name-update',
+                name: 'user-name-update-by-email-id',
                 text: `UPDATE users SET name = $1 WHERE email = $2 AND id = $3 RETURNING *`,
                 values: [req.body.name, req.pupUser.email, req.pupUser.id]
             };
