@@ -28,7 +28,7 @@ const loggly = require('../../providers/loggly');
  * Returns new user object with a new JWT token and.
  */
 router.patch('/', function(req, res, next) {
-    debug('email.js get', req.body);
+    debug('email.js patch', req.body);
     async function updateEmail() {
         try{
             let new_email = req.body.new_email;
