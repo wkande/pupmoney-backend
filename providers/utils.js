@@ -44,7 +44,7 @@ debug('--> jwtSecret', UTILS.prototype.jwtSecret);
  */
 UTILS.prototype.generateJwtToken = function(id, name, email, member_since, sub_expires, sys_admin, wallets){
     let userTokenInfo = {id, name, email, member_since, sub_expires, sys_admin, wallets};
-    console.log(1, UTILS.prototype.jwtSecret. userTokenInfo)
+    //console.log('UTILS.prototype.generateJwtToken --->', UTILS.prototype.jwtSecret, userTokenInfo)
     return jwt.sign(userTokenInfo, UTILS.prototype.jwtSecret);
 };
 
