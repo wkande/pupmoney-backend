@@ -25,18 +25,18 @@ const debug = require('debug')('pup:expenses.js');
  * @param skip      - req.query.skip
  */
 router.get('/', function(req, res, next) {
-    debug('expenses/expenses.js get');//, req.params, req.query, req.pupWallet)
+    debug('expenses/expenses.js get');
     async function getExpenses() {
         try{
             let cat_id = req.params.cat_id;
             req.query.q = req.query.q.replace(/ /g, ' & ');
             var query = {
-                name: 'expenses-get-by-category-id',
+                name: 'expenses-get-without-category-id',
                 text: `SELECT * FROM get_expenses($1, $2, $3, $4, $5)`,
                 values: [req.query.q, req.query.dttmStart, req.query.dttmEnd, req.pupWallet.id, req.query.skip]
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
- 
+
             if(!data.rows[0].items) data.rows[0].items = []; // The row array may be null
             res.status(200).send({   
                 statusCode:200, 
@@ -46,6 +46,7 @@ router.get('/', function(req, res, next) {
                 category_id:cat_id,
                 rowCount:data.rows[0].items.length, 
                 totalCount:data.rows[0].total_cnt,
+                totalAmt:data.rows[0].total_amt,
                 skip:req.query.skip,
                 expenses:data.rows[0].items
             });
