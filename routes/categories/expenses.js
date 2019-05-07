@@ -29,7 +29,7 @@ const debug = require('debug')('pup:expenses.js');
  * @param skip      - req.query.skip
  */
 router.get('/', function(req, res, next) {
-    debug('categories/expenses.js get');//, req.params, req.query, req.pupWallet)
+    debug('categories/expenses.js get');
     async function getExpensesByCategory() {
         try{
             let cat_id = req.params.cat_id;
@@ -50,11 +50,13 @@ router.get('/', function(req, res, next) {
                 category_id:cat_id,
                 rowCount:data.rows[0].items.length, 
                 totalCount:data.rows[0].total_cnt,
+                totalAmt:data.rows[0].total_amt,
                 skip:req.query.skip,
                 expenses:data.rows[0].items
             });
         }
         catch(err){
+            console.log(err)
             let msg = {statusCode:500, statusMsg:err.toString(), location:"expenses.get.getExpensesByCategory.outer"};
             loggly.error(msg);
             res.status(500).send(msg);
