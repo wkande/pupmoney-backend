@@ -42,6 +42,10 @@ POSTGRESQL.prototype.minConn = 7;
 POSTGRESQL.prototype.maxConn = 7;
 
 
+POSTGRESQL.prototype.getDatabaseVersion = function(shard){
+    return POSTGRESQL.prototype.shards[shard]._db_version;
+};
+
 /**
  * @summary Gathers the database configuration and creates connections to all shards. 
  * @description The databases array and 
@@ -97,9 +101,14 @@ POSTGRESQL.prototype.init = async function(){
      */
     let tickleShard = async function(shardNumb){
         try{
-            var query = { name: 'select-now',text: 'SELECT NOW()' };
+            var query = { name: 'get_show_server_version',text: 'show server_version' };
             const res = await POSTGRESQL.prototype.shards[shardNumb].query(query);
-            debug('--> postgres > Connected to shard:', shardNumb,  POSTGRESQL.prototype.shards[shardNumb].options.connectionString);
+
+            POSTGRESQL.prototype.shards[shardNumb]._db_version = res.rows[0].server_version.split(' ')[0];
+
+            debug('--> postgres > SHARD:', shardNumb,  
+            'VRS:' , res.rows[0].server_version.split(' ')[0],
+            'CONNECT:', POSTGRESQL.prototype.shards[shardNumb].options.connectionString);
         }
         catch(err){
             debug('++++++++++++++ Connect ERROR ++++++++++++++');
@@ -117,7 +126,6 @@ POSTGRESQL.prototype.init = async function(){
             const res = await tickleShard(z);
         }
     }
-
 
     initShards();
 }

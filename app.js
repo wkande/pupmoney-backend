@@ -30,7 +30,7 @@ const SECURITY = require('./providers/security');
 const security = new SECURITY();
 const app = express();
 const loggly = require('./providers/loggly');
-loggly.info('STARTUP', {startup:new Date()});
+loggly.info({msg:"STARTUP", dttm:new Date()});
 
 
 // ****** Init the connection pool to PostgreSQL shards ******* //
