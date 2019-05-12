@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
         try{
             debug('ping.js get', req.body);
 
-            var query = {name: 'ping-get', text: `dd SHOW server_version`};
+            var query = {name: 'ping-get', text: `SHOW server_version`};
             const data = await postgresql.shards[0].query(query);
 
             res.status(200).send({statusCode:200, 
