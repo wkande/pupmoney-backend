@@ -14,18 +14,19 @@ router.get('/', function(req, res, next) {
     
     async function sendPong(){
         try{
-            debug('ping.js get', req.body);
-
-            var query = {name: 'ping-get', text: `SHOW server_version`};
-            const data = await postgresql.shards[0].query(query);
+            debug('ping.js get');
+            let versions = [];
+            for(let i=0; i<postgresql.shards.length; i++){
+                versions.push(postgresql.getDatabaseVersion(i));
+            }
 
             res.status(200).send({statusCode:200, 
                 ping:"pong",
                 NODE_ENV:process.env.NODE_ENV,
-                statusMessage:"online",
+                node_version:process.version,
                 note:"PupMoney APIs.",
-                db_version:data.rows[0].server_version.split(' ')[0],
-                app_version:pjson.version
+                shard_versions:versions,
+                pup_version:pjson.version
             })
         }
         catch(err){
