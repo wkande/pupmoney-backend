@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
         try{
             debug('ping.js get', req.body);
 
-            var query = {name: 'ping-get', text: `SHOW server_version`};
+            var query = {name: 'ping-get', text: `dd SHOW server_version`};
             const data = await postgresql.shards[0].query(query);
 
             res.status(200).send({statusCode:200, 
@@ -31,7 +31,7 @@ router.get('/', function(req, res, next) {
         catch(err){
             let msg = {statusCode:500, statusMsg:err.toString(), location:"ping.get.outer"};
             loggly.error(msg);
-            res.status(500).send();
+            res.status(500).send(msg);
         }
     }
     sendPong();
