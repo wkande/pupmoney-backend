@@ -20,10 +20,10 @@ const emailRouter = require('./routes/user/email');
 const nameRouter = require('./routes/user/name');
 const adminUsersRouter = require('./routes/admin-users');
 const codeRouter = require('./routes/code');
+const pingRouter = require('./routes/ping');
 const walletsRouter = require('./routes/wallets/wallets');
 const categoriesRouter = require('./routes/categories/categories');
 const expensesRouter = require('./routes/expenses/expenses');
-//const expensesRouter = require('./routes/categories/expenses');
 const POSTGRESQL = require('./providers/postgresql');
 const postgresql = new POSTGRESQL();
 const SECURITY = require('./providers/security');
@@ -69,21 +69,12 @@ app.use('/categories', categoriesRouter); // Contains all /categories/:cat_id/ex
 app.use('/expenses', expensesRouter); // No category
 app.use('/wallets', walletsRouter);
 app.use('/code', codeRouter);
+app.use('/ping', pingRouter);
 app.use('/user', userRouter);
 app.use('/me', userRouter); // Me is an non-existant user so no security check to post a login (passwordless)
 app.use('/user/email', emailRouter);
 app.use('/user/name', nameRouter);
 app.use('/admin/users', adminUsersRouter);
-
-app.get('/ping', function(req, res, next) {
-    res.status(200).send({statusCode:200, 
-        ping:"pong",
-        NODE_ENV:process.env.NODE_ENV,
-        statusMessage:"online",
-        note:"PupMoney APIs.",
-        version:pjson.version
-    })
-});
 
 
 // --> Public directory. <--
