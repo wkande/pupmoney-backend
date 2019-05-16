@@ -75,9 +75,10 @@ router.get('/context', function(req, res, next) {
             req.query.q = req.query.q.replace(/ /g, ' & ');
             var query = {
                 name: 'expenses-get-by-category-id-text-search',
-                text: `SELECT * FROM get_expenses_text_search($1, $2, $3)`,
-                values: [req.query.q, req.pupWallet.id, req.query.skip]
+                text: `SELECT * FROM get_expenses_text_search($4, $1, $2, $3)`,
+                values: [req.query.q, req.pupWallet.id, req.query.skip, 'english']
             };
+        console.log(query)
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
  
             if(!data.rows[0].items) data.rows[0].items = []; // The row array may be null
