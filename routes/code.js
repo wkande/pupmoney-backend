@@ -30,7 +30,7 @@ router.post('/', function(req, res, next) {
             const data = await postgresql.shards[0].query(query);
 
             sendCodeViaEmail(email, code);
-            let obj = {statusCode:201, statusMsg:"Created", data:{email:email, code:"sent via email"}}
+            let obj = {statusCode:201, statusMsg:"Created", data:{email:email, code:null}}
             if(process.env.NODE_ENV != 'production') obj.data.code = code;
             res.status(201).send(obj);
         }
