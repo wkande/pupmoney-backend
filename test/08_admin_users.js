@@ -13,11 +13,11 @@ describe('GET /admin/users --> 08_admin_users.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.users.should.exist;
                     obj.rowCount.should.exist;
                     obj.offset.should.exist;

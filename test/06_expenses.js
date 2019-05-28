@@ -14,11 +14,11 @@ describe('GET /expenses --> 06_expensess.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.expenses.should.exist;
                     if(obj.expenses.length == 0)
                     {
@@ -43,12 +43,11 @@ describe('GET /expense/:exp_id --> 06_expenses.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    let obj = JSON.parse(res.text);
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.expense.id.should.exist;
                     done();
                 }
@@ -69,11 +68,11 @@ describe('POST /expenses --> 06_expenses.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.expense.id.should.exist;
                     global.temp_expense_id = obj.expense.id;  // <============== global.temp_expense_id
                     done();
@@ -96,11 +95,11 @@ describe('PUT /expenses/:exp_id --> 06_expenses.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.expense.id.should.exist;
                     done();
                 }
@@ -119,12 +118,11 @@ describe('DELETE /expenses/:exp_id --> 06_expenses.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     done();
                 }
             });
@@ -144,11 +142,11 @@ describe('GET /expenses/context --> 06_expensess.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.expenses.should.exist;
                     done();
                 }

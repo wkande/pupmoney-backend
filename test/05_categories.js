@@ -14,11 +14,11 @@ describe('GET /categories --> 05_categories.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.categories.should.exist;
                     global.category_id = obj.categories[0].id; // <============== global.category_id
                     done();
@@ -37,19 +37,17 @@ describe('GET /categories/:cat_id --> 05_categories.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    let obj = JSON.parse(res.text);
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.category.id.should.exist;
                     done();
                 }
             });
     });
 });
-
 
 
 describe('POST /categories --> 05_categories.js', function () {
@@ -63,11 +61,11 @@ describe('POST /categories --> 05_categories.js', function () {
             .expect(201)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(201);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(201);
                     obj.category.id.should.exist;
                     global.temp_category_id = obj.category.id; // <============== global.temp_category_id
                     done();
@@ -89,11 +87,10 @@ describe('PATCH /categories/:cat_id/name --> 05_categories.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);}
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.category.id.should.exist;
                     done();
                 }
@@ -113,11 +110,11 @@ describe('PATCH /categories/:cat_id/vendors --> 05_categories.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.category.id.should.exist;
                     done();
                 }
@@ -136,11 +133,11 @@ describe('DELETE /categories/:cat_id --> 05_categories.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     done();
                 }
             });

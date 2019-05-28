@@ -13,11 +13,11 @@ describe('GET /wallets --> 02_wallets.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.wallets.should.exist;
                     global.wallet = obj.wallets[0]; // <============== global.wallet #1
                     done();
@@ -35,11 +35,11 @@ describe('GET /wallet/:id --> 02_wallets.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     obj.wallet.id.should.exist;
                     done();
                 }
@@ -61,12 +61,13 @@ describe('POST /wallet --> 02_wallets.js', function () {
             .expect(201)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(201);
-                    obj.statusMsg.should.exist;
                     res.status.should.equal(201);
-                    obj.wallet.id.should.exist;
+                    obj.wallet.should.exist;
                     global.temp_wallet_id = obj.wallet.id; // <============== global.temp_wallet_id
                     done();
                 }
@@ -89,12 +90,12 @@ describe('PATCH /wallets/:id --> 02_wallet.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
-                    obj.wallet.id.should.exist;
+                    obj.wallet.should.exist;
                     done();
                 }
             });
@@ -113,12 +114,12 @@ describe('PATCH /wallets/:id/currency --> 02_wallet.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
-                    obj.wallet.id.should.exist;
+                    obj.wallet.should.exist;
                     done();
                 }
             });
@@ -134,11 +135,11 @@ describe('DELETE /wallet --> 02_wallets.js', function () {
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
-                if (err) {console.log(obj.statusMsg); done(err);}
+                if (err) {
+                    console.log(err); 
+                    done(err);
+                }
                 else{
-                    obj.statusCode.should.equal(200);
-                    obj.statusMsg.should.exist;
-                    res.status.should.equal(200);
                     done();
                 }
             });
