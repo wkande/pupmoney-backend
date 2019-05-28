@@ -12,11 +12,11 @@ const debug = require('debug')('pup:expenses.js');
 
 
 /**
- * Returns a list of all expenses within a date range and an optional text search.
+ * Returns a list of all expenses within a date range and an optional text search (q) which is not required.
  * The function called limits the return to 50 rows. "offset" is used 
  * to provide an offset value for the query as the starting point the next data set. 
  * 
- * This endpoint does validate the wallet_id but does not validate .
+ * This endpoint does validate the wallet_id.
  * 
  * @param pupWallet - req.pupWallet
  * @param q         - req.query.q
@@ -36,12 +36,11 @@ router.get('/', function(req, res, next) {
                 values: [req.query.q, req.query.dttmStart, req.query.dttmEnd, req.pupWallet.id, req.query.skip]
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
-
-            if(!data.rows[0].items) data.rows[0].items = []; // The row array may be null
-            res.status(200).send({   
-                statusCode:200, 
-                statusMsg:"OK",
-                user_id:req.pupUser.id,
+            if(!data.rows[0].items){
+                data.rows[0].items = []; // The row array may be null
+            }
+            res.status(200).send(
+            {   user_id:req.pupUser.id,
                 wallet_id:req.pupWallet.id,
                 category_id:cat_id,
                 rowCount:data.rows[0].items.length, 
@@ -52,9 +51,7 @@ router.get('/', function(req, res, next) {
             });
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"expenses.get.getExpenses.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getExpenses();
@@ -78,14 +75,12 @@ router.get('/context', function(req, res, next) {
                 text: `SELECT * FROM get_expenses_text_search($4, $1, $2, $3)`,
                 values: [req.query.q, req.pupWallet.id, req.query.skip, 'english']
             };
-        console.log(query)
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
- 
-            if(!data.rows[0].items) data.rows[0].items = []; // The row array may be null
-            res.status(200).send({   
-                statusCode:200, 
-                statusMsg:"OK",
-                user_id:req.pupUser.id,
+            if(!data.rows[0].items) {
+                data.rows[0].items = []; // The row array may be null
+            }
+            res.status(200).send(
+            {   user_id:req.pupUser.id,
                 wallet_id:req.pupWallet.id,
                 rowCount:data.rows[0].items.length, 
                 totalCount:data.rows[0].total_cnt,
@@ -94,9 +89,7 @@ router.get('/context', function(req, res, next) {
             });
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"expenses.get.getExpenses_w_q.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getExpenses();

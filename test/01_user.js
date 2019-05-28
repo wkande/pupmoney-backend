@@ -27,11 +27,13 @@ describe('POST /code --> 01_user.js', function() {
         .expect(201)
         .end(function(err,res){
           let obj = JSON.parse(res.text);
-          if (err) {console.log(obj.statusMsg); done(err);}
+          if (err) {
+            console.log(err); 
+            done(err);
+          }
           else{
-            obj.statusCode.should.equal(201);
-            obj.statusMsg.should.exist;
-            res.status.should.equal(201);
+            obj.data.email.should.exist;
+            obj.data.code.should.exist;
             global.code = obj.data.code; // <============== global.code
             done();
           }
@@ -48,11 +50,14 @@ describe('POST /me --> 01_user.js', function() {
         .expect(200)
         .end(function(err,res){
           let obj = JSON.parse(res.text);
-          if (err) {console.log(obj.statusMsg); done(err);}
+          if (err) {
+            console.log(err);
+            done(err);
+          }
           else{
-            obj.statusCode.should.equal(200);
-            obj.statusMsg.should.exist;
             res.status.should.equal(200);
+            obj.user.email.should.exist;
+            obj.user.token.should.exist;
             global.token = obj.user.token; // <============== global.code
             done();
           }
@@ -69,11 +74,13 @@ describe('GET /user --> 01_user.js', function () {
       .expect(200)
       .end(function (err, res) {
         let obj = JSON.parse(res.text);
-        if (err) {console.log(obj.statusMsg); done(err);}
+        if (err) {
+          console.log(err);
+          done(err);
+        }
         else{
-          obj.statusCode.should.equal(200);
-          obj.statusMsg.should.exist;
           res.status.should.equal(200);
+          obj.user.email.should.exist;
           obj.user.token.should.exist;
           global.token = obj.user.token; // <============== global.token
           done();

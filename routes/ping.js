@@ -30,9 +30,7 @@ router.get('/', function(req, res, next) {
             })
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"ping.get.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     sendPong();

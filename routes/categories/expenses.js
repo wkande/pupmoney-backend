@@ -40,12 +40,11 @@ router.get('/', function(req, res, next) {
                 values: [req.query.q, req.query.dttmStart, req.query.dttmEnd, req.pupWallet.id, cat_id, req.query.skip]
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
- 
-            if(!data.rows[0].items) data.rows[0].items = []; // The row array may be null
-            res.status(200).send({   
-                statusCode:200, 
-                statusMsg:"OK",
-                user_id:req.pupUser.id,
+            if(!data.rows[0].items){
+                data.rows[0].items = []; // The row array may be null
+            }
+            res.status(200).send(
+            {   user_id:req.pupUser.id,
                 wallet_id:req.pupWallet.id,
                 category_id:cat_id,
                 rowCount:data.rows[0].items.length, 
@@ -56,10 +55,7 @@ router.get('/', function(req, res, next) {
             });
         }
         catch(err){
-            console.log(err)
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"expenses.get.getExpensesByCategory.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getExpensesByCategory();
