@@ -21,6 +21,9 @@ router.get('/:cat_id', function(req, res, next) {
     async function getCategory() {
         try{
 
+            // TODO: Consider making a PSQL function for the count and data 
+            // OR use promiseAll
+
             // Get the the count of all expenses for s category
             var queryTrans = {
                 name: 'category-get-cnt-of-expenses',
@@ -29,7 +32,6 @@ router.get('/:cat_id', function(req, res, next) {
             };
             const dataTrans = await postgresql.shards[req.pupWallet.shard].query(queryTrans);
             let transactionCnt = dataTrans.rows[0].cnt;
-            console.log(transactionCnt)
 
             // Get the category
             var query = {
@@ -39,26 +41,19 @@ router.get('/:cat_id', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"No category with the requested walletID and catID.", location:"category.get.getCatgegory"};
-                loggly.error(msg);
-                res.status(400).send(msg);
-            }
-            else{    
-                let cat = data.rows[0];
-                let returnObj = {
-                    statusCode:200, 
-                    statusMsg:"OK",
-                    wallet_id:req.pupWallet.id,
-                    transactionCnt:transactionCnt,
-                    category:cat
-                };
-                res.status(200).send(returnObj);
-            }
+                res.status(400);
+                return next("No category with the requested walletID and catID.");
+            }   
+            let cat = data.rows[0];
+            let returnObj = 
+            {   wallet_id:req.pupWallet.id,
+                transactionCnt:transactionCnt,
+                category:cat
+            };
+            res.status(200).send(returnObj);
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"category.get.getCategory.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getCategory();
@@ -82,22 +77,17 @@ router.post('/', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not created.", location:"category.post.postCategory"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not created.");
             }
-            else{ 
-                let returnObj = {statusCode:201, statusMsg:"OK"};
-                returnObj.wallet_id = req.pupWallet.id,
-                returnObj.rowCount = data.rowCount;
-                returnObj.category = data.rows[0];
-                res.status(201).send( returnObj );
-            }
+            let returnObj = {};
+            returnObj.wallet_id = req.pupWallet.id,
+            returnObj.rowCount = data.rowCount;
+            returnObj.category = data.rows[0];
+            res.status(201).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"category.post.postCategory.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     postCategory();
@@ -122,22 +112,17 @@ router.patch('/:cat_id/name', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for category_id: "+cat_id,  location:"category.patch.patchName"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not found for category_id: "+cat_id);
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"OK"};
-                returnObj.wallet_id = req.pupWallet.id,
-                returnObj.rowCount = data.rowCount;
-                returnObj.category = data.rows[0];
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {};
+            returnObj.wallet_id = req.pupWallet.id,
+            returnObj.rowCount = data.rowCount;
+            returnObj.category = data.rows[0];
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"category.patch.patchName.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     patchCategoryName();
@@ -162,22 +147,17 @@ router.patch('/:cat_id/vendors', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for category_id: "+cat_id,  location:"category.patch.patchVendors"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not found for category_id: "+cat_id);
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"OK"};
-                returnObj.wallet_id = req.pupWallet.id,
-                returnObj.rowCount = data.rowCount;
-                returnObj.category = data.rows[0];
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {};
+            returnObj.wallet_id = req.pupWallet.id,
+            returnObj.rowCount = data.rowCount;
+            returnObj.category = data.rows[0];
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"category.patch.patchVendors.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     patchCategoryVendors();
@@ -201,20 +181,15 @@ router.delete('/:cat_id', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rowCount == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for category_id: "+cat_id, location:"category.delete.deleteCategory"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not found for category_id: "+cat_id);
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"DELETED category_id: "+cat_id};
-                returnObj.rowCount = data.rowCount;
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {};
+            returnObj.rowCount = data.rowCount;
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"category.delete.deleteCategory.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     deleteCategory();
@@ -251,20 +226,15 @@ router.delete('/:cat_id/:id', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rowCount == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for category_id: "+cat_id+" wallet_id: "+req.pupWallet.id, location:"category.deleteCategory.deleteExpense"};
-                loggly.error(msg);
-                res.status(500).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not found for category_id: "+cat_id+" wallet_id: "+req.pupWallet.id);
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"DELETED category_id: "+cat_id};
-                returnObj.rowCount = data.rowCount;
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {};
+            returnObj.rowCount = data.rowCount;
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"category.delete_move.deleteCategory.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     deleteCategory();

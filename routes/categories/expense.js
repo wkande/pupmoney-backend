@@ -33,25 +33,18 @@ router.get('/:exp_id', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rowCount == 0){
-                let msg = {statusCode:400, statusMsg:"No exp_id: "+exp_id+" for the requested cat_id "+cat_id+". Do you have the right wallet or category?", location:"expense.get.getExpense"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("No exp_id: "+exp_id+" for the requested cat_id "+cat_id+". Do you have the right wallet or category?")
             }
-            else{  
-                res.status(200).send({   
-                    statusCode:200, 
-                    statusMsg:"OK",
-                    user_id:req.pupUser.id,
-                    wallet_id:req.pupWallet.id,
-                    category_id:cat_id,
-                    expense:data.rows[0]
-                });
-            }
+            res.status(200).send(
+            {   user_id:req.pupUser.id,
+                wallet_id:req.pupWallet.id,
+                category_id:cat_id,
+                expense:data.rows[0]
+            });
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"expense-item.get.getExpense.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getExpense();
@@ -85,21 +78,18 @@ router.post('/', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rows.length == 0){
-                res.status(400).send({statusCode:400, statusMsg:"Bad Request: Insert failed. Possible record not found for cat_id "+cat_id, location:"expense.post.postExpense"});
+                res.status(400);
+                return next("Bad Request: Insert failed. Possible record not found for cat_id "+cat_id);
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"OK"};
-                returnObj.user_id = req.pupUser.id;
-                returnObj.wallet_id = req.pupWallet.id;
-                returnObj.rowCount = data.rowCount;
-                returnObj.expense = data.rows[0];
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {};
+            returnObj.user_id = req.pupUser.id;
+            returnObj.wallet_id = req.pupWallet.id;
+            returnObj.rowCount = data.rowCount;
+            returnObj.expense = data.rows[0];
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"expense.post.postExpense.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     postExpense();
@@ -135,26 +125,21 @@ router.put('/:exp_id', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rows.length == 0){
-                    let msg = {statusCode:500, statusMsg:"Bad Request: Record not found for cat_id: "+cat_id+", exp_id: "+exp_id+". Also do you have the right wallet_id?", location:"expense.patch.putExpenseter"};
-                    loggly.error(msg);
-                    res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not found for cat_id: "+cat_id+", exp_id: "+exp_id+". Also do you have the right wallet_id?");
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"OK"};
-                delete data.rows[0].document; // text search doc
-                returnObj.user_id = req.pupUser.id,
-                returnObj.wallet_id = req.pupWallet.id;
-                returnObj.org_category_id = cat_id;
-                returnObj.category_id = new_cat_id;
-                returnObj.rowCount = data.rowCount;
-                returnObj.expense = data.rows[0];
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {};
+            delete data.rows[0].document; // text search doc
+            returnObj.user_id = req.pupUser.id,
+            returnObj.wallet_id = req.pupWallet.id;
+            returnObj.org_category_id = cat_id;
+            returnObj.category_id = new_cat_id;
+            returnObj.rowCount = data.rowCount;
+            returnObj.expense = data.rows[0];
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"expense-item.patch.putExpense.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     putExpense();
@@ -181,20 +166,15 @@ router.delete('/:exp_id', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rowCount == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request or Unauthorized: Record not found for exp_id: "+exp_id+". Do you have the right wallet_id?", location:"expense.delete.deleteExpense"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not found for exp_id: "+exp_id+". Do you have the right wallet_id?");
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"DELETED expense_id: "+exp_id};
-                returnObj.rowCount = data.rowCount;
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {};
+            returnObj.rowCount = data.rowCount;
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"expense.delete.deleteExpense.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     deleteExpense();
@@ -202,10 +182,10 @@ router.delete('/:exp_id', function(req, res, next) {
 
 
 
-function getSearchTextDoc(exp_name, vendor, note, amt){
+/*function getSearchTextDoc(exp_name, vendor, note, amt){
     if(!note) note = ' ';
     if(!vendor) vendor = '';
     return exp_name+' '+vendor+' '+note+' '+amt;
-}
+}*/
 
 module.exports = router;

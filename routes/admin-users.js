@@ -26,31 +26,16 @@ router.get('/', function(req, res, next) {
                 text: "SELECT * from USERS LIMIT 50 OFFSET $1",
                 values: [req.params.offset]
             };
-            postgresql.shards[0].query(query, (err, data) => {
-                try{
-                    if(err) {
-                        let msg = {statusCode:500, statusMsg:err.toString(), location:"admin-users.get.query.err"};
-                        loggly.error(msg);
-                        res.status(500).send(msg);
-                    }
-                    else{
-                        res.status(200).send({statusCode:200, statusMsg:"OK",
-                        offset:req.params.offset, 
-                        rowCount:data.rowCount, 
-                        users:data.rows});
-                    }
-                }
-                catch(err){
-                    let msg = {statusCode:500, statusMsg:err.toString(), location:"admin-users.get.query.execute"};
-                    loggly.error(msg);
-                    res.status(500).send(msg);
-                }
-            });
+            const data = await postgresql.shards[0].query(query);
+
+            res.status(200).send(
+                {offset:req.params.offset, 
+                rowCount:data.rowCount, 
+                users:data.rows}
+            );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"admin-users.get.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getUsers();

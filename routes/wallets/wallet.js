@@ -34,25 +34,18 @@ router.get('/:wallet_id', function(req, res, next) {
             };
             const data = await postgresql.shards[0].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"No wallet with the requested wallet_id: "+wallet_id, location:"wallet.get.getWallet"};
-                loggly.error(msg);
-                res.status(400).send(msg);
-            }
-            else{    
-                let returnObj = {
-                    statusCode:200, 
-                    statusMsg:"OK",
-                    user_id:req.pupUser.id,
-                    user_email:req.pupUser.email,
-                    wallet:data.rows[0]
-                };
-                res.status(200).send(returnObj);
-            }
+                res.status(400);
+                return next("No wallet with the requested wallet_id: "+wallet_id);
+            }  
+            let returnObj = 
+            {   user_id:req.pupUser.id,
+                user_email:req.pupUser.email,
+                wallet:data.rows[0]
+            };
+            res.status(200).send(returnObj);
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"wallet.get.getWallet.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getWallet();
@@ -71,8 +64,6 @@ router.post('/', function(req, res, next) {
 
     async function postWallet(){
         try{
-            console.log('\n -------- > POST WALLET ========================')
-            console.log("USER_ID", req.pupUser.id)
             debug('wallet.js post', req.params, req.body);
             // Get the next shard
             let nextShard = await utils.getNextShard(); // GET NEXT SHARD
@@ -85,35 +76,30 @@ router.post('/', function(req, res, next) {
             };
             const data = await postgresql.shards[0].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Wallet not created.", location:"wallet.post.postWallet"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Wallet not created.");
             }
-            else{ 
 
-                let returnObj = {statusCode:201, statusMsg:"OK"};
-                returnObj.rowCount = data.rowCount;
-                returnObj.wallet = data.rows[0];
+            let returnObj = {};
+            returnObj.rowCount = data.rowCount;
+            returnObj.wallet = data.rows[0];
 
-                // Finalize wallet
-                var queryFinalize = {
-                    name: 'wallet-finalize-wallet-in-shard',
-                    text: "SELECT * from finalize_wallet($1)", 
-                    values: [returnObj.wallet.id]
-                };
-                const finalizeRef = await postgresql.shards[nextShard].query(queryFinalize);
+            // Finalize wallet
+            var queryFinalize = {
+                name: 'wallet-finalize-wallet-in-shard',
+                text: "SELECT * from finalize_wallet($1)", 
+                values: [returnObj.wallet.id]
+            };
+            const finalizeRef = await postgresql.shards[nextShard].query(queryFinalize);
 
-                /**
-                 *  @TODO If finalize fails delete wallet?
-                 */
+            /**
+             *  @TODO If finalize fails delete wallet?
+             */
 
-                res.status(201).send( returnObj );
-            }
+            res.status(201).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"wallet.post.postWallet.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     postWallet();
@@ -143,21 +129,16 @@ router.patch('/:wallet_id', function(req, res, next) {
             };
             const data = await postgresql.shards[0].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for wallet_id: "+wallet_id, location:"wallet.patch.patchWallet"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not found for wallet_id: "+wallet_id);
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"OK", user_id:req.pupUser.id};
-                returnObj.rowCount = data.rowCount;
-                returnObj.wallet = data.rows[0];
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {user_id:req.pupUser.id};
+            returnObj.rowCount = data.rowCount;
+            returnObj.wallet = data.rows[0];
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"wallet.patch.patchWallet.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     patchWallet();
@@ -175,7 +156,7 @@ router.patch('/:wallet_id/currency', function(req, res, next) {
 
     async function patchWallet(){
         try{
-            debug('wallet.js patch', req.params, req.body);
+            debug('wallet.js patch>currency', req.params, req.body);
             let wallet_id = req.params.wallet_id;
             var query = {
                 name: 'wallet-patch-currency',
@@ -185,21 +166,16 @@ router.patch('/:wallet_id/currency', function(req, res, next) {
             };
             const data = await postgresql.shards[0].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for wallet_id: "+wallet_id, location:"wallet.patch.patchWallet > currency"};
-                loggly.error(msg);
-                res.status(400).send(msg);
+                res.status(400);
+                return next("Bad Request: Record not found for wallet_id: "+wallet_id);
             }
-            else{ 
-                let returnObj = {statusCode:200, statusMsg:"OK", user_id:req.pupUser.id};
-                returnObj.rowCount = data.rowCount;
-                returnObj.wallet = data.rows[0];
-                res.status(200).send( returnObj );
-            }
+            let returnObj = {};
+            returnObj.rowCount = data.rowCount;
+            returnObj.wallet = data.rows[0];
+            res.status(200).send( returnObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"wallet.patch.patchWallet.outer > currency"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     patchWallet();
@@ -225,10 +201,8 @@ router.delete('/:wallet_id', function(req, res, next) {
             };
             const dataFind = await postgresql.shards[0].query(queryWallet);
             if(dataFind.rowCount == 0 ){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for wallet_id or wallet is the default wallet: "+wallet_id, location:"wallet.delete.deleteWallet.find"};
-                loggly.error(msg);
-                res.status(400).send(msg);
-                return;
+                res.status(400);
+                return next("Bad Request: Shard not found for wallet_id or wallet is the default wallet: "+wallet_id);
             }
             let shard = dataFind.rows[0].shard;
 
@@ -240,10 +214,8 @@ router.delete('/:wallet_id', function(req, res, next) {
             };
             const data = await postgresql.shards[0].query(query);
             if(data.rowCount == 0 ){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Record not found for wallet_id or wallet is the default wallet: "+wallet_id, location:"wallet.delete.deleteWallet.delete"};
-                loggly.error(msg);
-                res.status(400).send(msg);
-                return;
+                res.status(400);
+                return next("Bad Request: Record not found for wallet_id or wallet is the default wallet: "+wallet_id);
             }
 
             // FINALIZE DELETE wallet
@@ -253,22 +225,21 @@ router.delete('/:wallet_id', function(req, res, next) {
                 values: [wallet_id]
             };
             const deleteWalletShardRef = await postgresql.shards[shard].query(queryDeleteWalletShard);
+            //  @todo Somthing might work better here
             if(data.rowCount != 1 ){
-                let msg = {statusCode:400, statusMsg:"Bad Request: Wallet child rows now completly deleted, manual cleanup needed.", location:"wallet.delete.deleteWallet.delete-child-rows"};
+                let msg = {message:"Bad Request: Wallet child rows now completly deleted, manual cleanup needed.", location:"wallet.delete.deleteWallet.delete-child-rows"};
                 loggly.error(msg);
                 // Do not return, this error left orphaned rows in child tables that can be cleanded manullay.
                 // If not cleaned up this does not hurt the app
             }
 
             // RESPOND
-            let resObj = {statusCode:200, statusMsg:"DELETED wallet_id: "+wallet_id};
+            let resObj = {};
             resObj.rowCount = data.rowCount;
             res.status(200).send( resObj );
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), sqlcode:err.code, location:"wallet.delete.deleteWallet.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     };
     deleteWallet();

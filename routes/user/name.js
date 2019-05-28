@@ -11,7 +11,6 @@ const UTILS = require('../../providers/utils');
 const utils = new UTILS();
 const userModule = require('./user');
 const debug = require('debug')('pup:name.js');
-const loggly = require('../../providers/loggly');
 
 
 /** 
@@ -20,13 +19,12 @@ const loggly = require('../../providers/loggly');
  * @param user_id  - req.pupUser.id
  * @param email    - req.pupUser.email
  * 
- * Returns new user object with a new JWT token and.
+ * Returns new user object with a new JWT token.
  */
 router.patch('/', function(req, res, next) {
     debug('name.js patch', req.body.name);
     async function updateName() {
         try{
-
             // UPDATE NAME
             var query2 = {
                 name: 'user-name-update-by-email-id',
@@ -42,23 +40,14 @@ router.patch('/', function(req, res, next) {
             .then((results) => {
                 user.wallets = results[0].rows;
                 user.token = utils.generateJwtToken(user.id, user.name, user.email, user.member_since, user.sub_expires, user.sys_admin, user.wallets);
-                res.status(200).send(
-                {   statusCode:200, 
-                    statusMsg:"OK", 
-                    user:user
-                });
+                res.status(200).send({ user:user });
             })
             .catch(err => {
-                debug(err);
-                let msg = {statusCode:500, statusMsg:err.code+"-"+err.toString(), location:"email.patch.updateEmail.promise.all"};
-                loggly.error(msg);
-                res.status(500).send(msg);
+                next(err);
             });
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"email.patch.updateEmail.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     updateName();

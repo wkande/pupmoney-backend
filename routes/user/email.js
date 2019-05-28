@@ -11,7 +11,6 @@ const UTILS = require('../../providers/utils');
 const utils = new UTILS();
 const userModule = require('./user');
 const debug = require('debug')('pup:email.js');
-const loggly = require('../../providers/loggly');
 
 
 /** 
@@ -25,7 +24,7 @@ const loggly = require('../../providers/loggly');
  * @param code      - req.body.code;
  * @param user_id        - req.pupUser.id
  * 
- * Returns new user object with a new JWT token and.
+ * Returns new user object with a new JWT token.
  */
 router.patch('/', function(req, res, next) {
     debug('email.js patch', req.body);
@@ -41,8 +40,8 @@ router.patch('/', function(req, res, next) {
             };
             const dataCode = await postgresql.shards[0].query(query);
             if (dataCode.rowCount != 1){
-                res.status(554).send({statusCode:554, statusMsg:"Invalid code.", location:"password.patch.updateEmail.code"});
-                return;
+                res.status(403);
+                return next("Invalid code. Please enter the code sent to you or request another code.");
             }
 
             // UPDATE EMAIL
@@ -60,22 +59,14 @@ router.patch('/', function(req, res, next) {
             .then((results) => {
                 user.wallets = results[0].rows;
                 user.token = utils.generateJwtToken(user.id, user.name, user.email, user.member_since, user.sub_expires, user.sys_admin, user.wallets);
-                res.status(200).send(
-                {   statusCode:200, 
-                    statusMsg:"OK", 
-                    user:user
-                });
+                res.status(200).send({ user:user });
             })
             .catch(err => {
-                let msg = {statusCode:500, statusMsg:err.code+"-"+err.toString(), location:"email.patch.updateEmail.promise.all"};
-                loggly.error(msg);
-                res.status(500).send(msg);
+                next(err);
             });
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"email.patch.updateEmail.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     updateEmail();

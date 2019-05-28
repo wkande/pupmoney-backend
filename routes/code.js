@@ -4,7 +4,6 @@ const POSTGRESQL = require('../providers/postgresql');
 const postgresql = new POSTGRESQL();
 const sendmail = require('sendmail')({silent: true});
 const debug = require('debug')('pup:code.js');
-const loggly = require('../providers/loggly');
 
 
 /**
@@ -29,15 +28,31 @@ router.post('/', function(req, res, next) {
             };
             const data = await postgresql.shards[0].query(query);
 
-            sendCodeViaEmail(email, code);
-            let obj = {statusCode:201, statusMsg:"Created", data:{email:email, code:null}}
-            if(process.env.NODE_ENV != 'production') obj.data.code = code;
-            res.status(201).send(obj);
+            sendmail({
+                from: 'PupMoney <supportme@pupmoney.com>',
+                to: email,
+                subject: 'PupMoney Code Request',
+                text: `PupMoney is an expenses management tool. A code `+code+` was requested for this email address. If you did not request the code 
+          do nothing. If you are having trouble please respond 
+          to this email and a help desk ticket will automatically be generated for you.\n\nRegards,\nPupMoney Support`,
+                html: `PupMoney is an expenses management tool. 
+                A code <span style="font-size:medium"><b>`+code+`</b></span> was requested for this email address. If you did not request the code 
+                do nothing.  
+                If you are having trouble please respond to this email and a help desk ticket will automatically be generated for you.<br><br>Regards,<br>
+                PupMoney Support`,
+              }, function(err, reply) {
+                    if(err){ 
+                        err.message = 'Email not sent to '+email+'. - '+err.message;
+                        return next(err);
+                    }
+                    let obj = {data:{email:email, code:null}}
+                    if(process.env.NODE_ENV != 'production') obj.data.code = code;
+                    res.status(201).send(obj);
+
+            });
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"code.post.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     sendCode();
@@ -49,42 +64,7 @@ router.post('/', function(req, res, next) {
  */
 function generateCode() {
     return Math.floor(Math.random() * 90000) + 10000;
-  }
-  
-
-/**
- * Sends an email with a new code.
- * @param email - user email address
- * @param code  - new code
- */
-function sendCodeViaEmail(email, code){
-    try{
-        sendmail({
-            from: 'PupMoney <supportme@pupmoney.com>',
-            to: email,
-            subject: 'PupMoney Code Request',
-            text: `PupMoney is an expenses management tool. A code `+code+` was requested for this email address. If you did not request the code 
-      do nothing. If you are having trouble please respond 
-      to this email and a help desk ticket will automatically be generated for you.\n\nRegards,\nPupMoney Support`,
-            html: `PupMoney is an expenses management tool. 
-            A code <span style="font-size:medium"><b>`+code+`</b></span> was requested for this email address. If you did not request the code 
-            do nothing.  
-            If you are having trouble please respond to this email and a help desk ticket will automatically be generated for you.<br><br>Regards,<br>
-            PupMoney Support`,
-          }, function(err, reply) {
-                if(err){ 
-                    let msg = {statusCode:500, statusMsg:err.toString(), location:"code.post.sendCodeViaEmail.execute"};
-                    loggly.error(msg);
-                }
-                // No response when the email is sent. The user will not get an in-app confirmation of success.
-                // They will need to check their email.
-        });
-    }
-    catch(err){
-        let msg = {statusCode:500, statusMsg:err.toString(), location:"code.post.sendCodeViaEmail.outer"};
-        loggly.error(msg);
-    } 
-  }
+}
 
 
 module.exports = router;

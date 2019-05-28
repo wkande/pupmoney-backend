@@ -53,27 +53,20 @@ router.get('/', function(req, res, next) {
             };
             const data = await postgresql.shards[req.pupWallet.shard].query(query);
             if(data.rows.length == 0){
-                let msg = {statusCode:400, statusMsg:"No categories for the requested walletID.", location:"getCategories.get"};
-                loggly.error(msg);
-                res.status(400).send(msg);
-            }
-            else{  
-                res.status(200).send({   
-                    statusCode:200, 
-                    statusMsg:"OK",
-                    user_id:req.pupUser.id,
-                    wallet_id:req.pupWallet.id,
-                    rowCount:data.rows.length,
-                    dttmStart:req.query.dttmStart,
-                    dttmEnd:req.query.dttmEnd,
-                    categories:data.rows
-                });
-            }
+                res.status(400);
+                return next("No categories for the requested walletID.");
+            } 
+            res.status(200).send(
+            {   user_id:req.pupUser.id,
+                wallet_id:req.pupWallet.id,
+                rowCount:data.rows.length,
+                dttmStart:req.query.dttmStart,
+                dttmEnd:req.query.dttmEnd,
+                categories:data.rows
+            });
         }
         catch(err){
-            let msg= {statusCode:500, statusMsg:err.toString(), location:"wallet.get.getCategories.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getCategories();

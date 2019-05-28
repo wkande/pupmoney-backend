@@ -36,19 +36,15 @@ router.get('/', function(req, res, next) {
                 values: [user_id]
             };
             const data = await postgresql.shards[0].query(query); 
-            res.status(200).send({   
-                statusCode:200, 
-                statusMsg:"OK",
-                user_id:req.pupUser.id,
+            res.status(200).send(
+            {   user_id:req.pupUser.id,
                 user_email:req.pupUser.email,
                 rowCount:data.rows.length,
                 wallets:data.rows
             });
         }
         catch(err){
-            let msg = {statusCode:500, statusMsg:err.toString(), location:"wallets.get.getWallets.outer"};
-            loggly.error(msg);
-            res.status(500).send(msg);
+            next(err);
         }
     }
     getWallets();
