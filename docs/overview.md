@@ -66,10 +66,10 @@ npm test
 ## Postman
 Alternate testing can be done with the Postman workspace created for PupMoney. The workspace contains a test for the production environment that is read only.
 
-Also all endpoints can be executed maulayy using Postman. Open the Postman app using the button below. The Postman requests will be imported into a new Collection named PupMoney.
+Also all endpoints can be executed manually using Postman. Open the Postman app using the button below. The Postman requests will be imported into a new Collection named PupMoney.
 
 ##### Global URL variable
-The global URL variable must be changed to run against dev, stage or production.
+The Postman global URL environment variable must be changed to run against dev, stage or production. We would sugesst using the stage URL.
 
 dev: (usually) http://192.168.0.14:3000
 stage: https://pupmoney-backend-stage.herokuapp.com

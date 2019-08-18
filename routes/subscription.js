@@ -52,7 +52,7 @@ router.post('/', function(req, res, next) {
                 console.log('NEW expires', expires); 
 
                 
-                // POST TO STRIPE
+                // POST TO STRIPE +++++++++++++++++++++++++
 
 
 
@@ -72,39 +72,19 @@ router.post('/', function(req, res, next) {
                     // OUCH what do we do
                 }
 
-                // TEMP
-                if(1==1){
-                    // REPONSE
-                    console.log('user.sub_expires', user.sub_expires)
-                    res.status(200).send( {statusCode:200, statusMsg:"OK", user:user} );
-                    return;
-                }
-
-
-                
-
 
                 // INSERT STRIPE RESULTS TO SUBSCRIPTIONS
                 var queryUserExists = {
-                    name: 'insert-subscriptions',
-                    text: "INSERT into SUBSCRIPTIONS  where email = $1",
-                    values: [email]
+                    name: 'insert-payments',
+                    text: "INSERT into PAYMENTS (user_id, amt) values($1, $2)",
+                    values: [user.id, '1.99']
                 };
                 const userExistsRef = await postgresql.shards[0].query(queryUserExists);
-                if (userExistsRef.rowCount == 1){
-                    user = userExistsRef.rows[0];
-                    user.newAccount = false;
-                }
 
-     
-
-                // GET WALLETS
-                //const walletsRef = await getWallets(user.id);
-                //user.wallets = walletsRef.rows;
 
                 // REPONSE
                 user.token = utils.generateJwtToken(user.id, user.name, user.email, user.member_since, user.sub_expires, user.sys_admin, user.wallets)
-                res.status(200).send( {statusCode:200, statusMsg:"OK", user:user} );
+                res.status(200).send( {user:user} );
             }
             catch(err){
                 next(err);
