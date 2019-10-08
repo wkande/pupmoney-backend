@@ -1,13 +1,9 @@
-
-var supertest = require("supertest");
 var should = require("should");
-const url = process.env.PUP_TEST_URL || 'http://192.168.0.14:3000';
-var server = supertest.agent(url);
 
 
 describe('GET /wallets --> 02_wallets.js', function () {
     it('gets a list of wallets', function (done) {
-        server
+        global.server
             .get('/wallets')
             .set('Authorization', 'Bearer ' + global.token)
             .expect(200)
@@ -29,7 +25,7 @@ describe('GET /wallets --> 02_wallets.js', function () {
 
 describe('GET /wallet/:id --> 02_wallets.js', function () {
     it('gets a wallet', function (done) {
-        server
+        global.server
             .get('/wallets/'+global.wallet.id)
             .set('Authorization', 'Bearer ' + global.token)
             .expect(200)
@@ -50,7 +46,7 @@ describe('GET /wallet/:id --> 02_wallets.js', function () {
 
 describe('POST /wallet --> 02_wallets.js', function () {
     it('post a wallet', function (done) {
-        server
+        global.server
             .post('/wallets')
             .send({ 'name':'My new wallet', 
                     'shares':'{}', 
@@ -79,7 +75,7 @@ describe('POST /wallet --> 02_wallets.js', function () {
 describe('PATCH /wallets/:id --> 02_wallet.js', function () {
     it('patch name and shares on a wallet id: ', function (done) {
         let body = {};
-        server
+        global.server
             .patch('/wallets/'+global.temp_wallet_id)
             .send({ 'name':'My new wallet name', 
                     'shares':'{1,2,4}',
@@ -105,7 +101,7 @@ describe('PATCH /wallets/:id --> 02_wallet.js', function () {
 describe('PATCH /wallets/:id/currency --> 02_wallet.js', function () {
     it('patch currency on a wallet id: ', function (done) {
         let body = {};
-        server
+        global.server
             .patch('/wallets/'+global.temp_wallet_id+'/currency')
             .send({ 'currency':'{"curId": 2, "symbol": "", "decimal": ".", "precision": 2, "separator": ","}'
             })
@@ -129,7 +125,7 @@ describe('PATCH /wallets/:id/currency --> 02_wallet.js', function () {
 
 describe('DELETE /wallet --> 02_wallets.js', function () {
     it('delete a wallet', function (done) {
-        server
+        global.server
             .delete('/wallets/'+global.temp_wallet_id)
             .set('Authorization', 'Bearer ' + global.token)
             .expect(200)

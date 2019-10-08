@@ -37,15 +37,15 @@ By default the TESTS are run against a localhost URL which is set at the top of 
 const url = process.env.PUP_TEST_URL || 'http://192.168.0.14:3000';
 ```
 
-To run against a different DEV or STAGE url export an environment variable as PUP_TEST_URL.
+To run against a different DEV or BETA url export an environment variable as PUP_TEST_URL.
 
 ```bash
 // mac dev
 export PUP_TEST_URL=http://192.168.0.14:3000
 // alternate dev
 export PUP_TEST_URL=http://192.168.3.14:3005
-// stage
-export PUP_TEST_URL=https://pupmoney-backend-stage.herokuapp.com
+// beta
+export PUP_TEST_URL=https://pupmoney-beta.herokuapp.com
 ```
 
 A valid email address must be provided for the tests to run as the environment variable PUP_TEST_EMAIL.
@@ -69,10 +69,10 @@ Alternate testing can be done with the Postman workspace created for PupMoney. T
 Also all endpoints can be executed manually using Postman. Open the Postman app using the button below. The Postman requests will be imported into a new Collection named PupMoney.
 
 ##### Global URL variable
-The Postman global URL environment variable must be changed to run against dev, stage or production. We would sugesst using the stage URL.
+The Postman global URL environment variable must be changed to run against dev, beta or production. Suggest using the beta URL.
 
 dev: (usually) http://192.168.0.14:3000
-stage: https://pupmoney-backend-stage.herokuapp.com
+beta: https://pupmoney-beta.herokuapp.com
 production: https://pupmoney-backend.herokuapp.com/
 
 

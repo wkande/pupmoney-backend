@@ -1,13 +1,9 @@
-
-var supertest = require("supertest");
 var should = require("should");
-const url = process.env.PUP_TEST_URL || 'http://192.168.0.14:3000';
-var server = supertest.agent(url);
 
 
 describe('GET /expenses --> 06_expensess.js', function () {
     it('gets a list of expenses by category_id', function (done) {
-        server
+        global.server
             .get('/categories/'+global.category_id+'/expenses/?q=&dttmStart=2014-01-23&dttmEnd=2039-12-12&offset=0')
             .set('Authorization', 'Bearer ' + global.token)
             .set('wallet', JSON.stringify(global.wallet))
@@ -36,7 +32,7 @@ describe('GET /expenses --> 06_expensess.js', function () {
 
 describe('GET /expense/:exp_id --> 06_expenses.js', function () {
     it('get an expense', function (done) {
-        server
+        global.server
             .get('/categories/'+global.category_id+'/expenses/'+global.expense_id)
             .set('Authorization', 'Bearer ' + global.token)
             .set('wallet', JSON.stringify(global.wallet))
@@ -59,7 +55,7 @@ describe('GET /expense/:exp_id --> 06_expenses.js', function () {
 
 describe('POST /expenses --> 06_expenses.js', function () {
     it('post an expense', function (done) {
-        server
+        global.server
             .post('/categories/'+global.category_id+'/expenses/')
             .send({'note':'mynote', 'vendor':'K-Mart', 'amt':433.90, dttm:'2014-02-01'})
             .set('wallet', JSON.stringify(global.wallet))
@@ -86,7 +82,7 @@ describe('POST /expenses --> 06_expenses.js', function () {
 describe('PUT /expenses/:exp_id --> 06_expenses.js', function () {
     it('put an expense', function (done) {
         // Will use the same cat_id in the body
-        server
+        global.server
             .put('/categories/'+global.category_id+'/expenses/'+global.temp_expense_id)
             .send({'cat_id':global.category_id, 'note':'mynote again', 'vendor':'Sears','amt':290.34, dttm:'2016-03-01'})
             .set('wallet', JSON.stringify(global.wallet))
@@ -111,7 +107,7 @@ describe('PUT /expenses/:exp_id --> 06_expenses.js', function () {
 
 describe('DELETE /expenses/:exp_id --> 06_expenses.js', function () {
     it('delete an expense', function (done) {
-        server
+        global.server
             .delete('/categories/'+global.category_id+'/expenses/'+global.temp_expense_id)
             .set('Authorization', 'Bearer ' + global.token)
             .set('wallet', JSON.stringify(global.wallet))
@@ -135,7 +131,7 @@ describe('DELETE /expenses/:exp_id --> 06_expenses.js', function () {
  */
 describe('GET /expenses/context --> 06_expensess.js', function () {
     it('gets a list of expenses by text search', function (done) {
-        server
+        global.server
             .get('/expenses/context?q=rei&skip=0')
             .set('Authorization', 'Bearer ' + global.token)
             .set('wallet', JSON.stringify(global.wallet))

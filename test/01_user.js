@@ -1,17 +1,29 @@
 // https://codeforgeek.com/2015/07/unit-testing-nodejs-application-using-mocha/
 
+/**
+ * Be sure to set PUP_TEST_URL for beta url, leave null for dev.
+ * Set PUP_TEST_EMAIL for email account for login.
+ * 
+ * export PUP_TEST_EMAIL='<email_here>'
+ * export PUP_TEST_URL='https://pupmoney-beta.herokuapp.com'
+ */
+
+
 var supertest = require("supertest");
 var should = require("should");
 const url = process.env.PUP_TEST_URL || 'http://192.168.0.14:3000';
-var server = supertest.agent(url);
-var email = process.env.PUP_TEST_EMAIL;
+global.server = supertest.agent(url); // The Nodejs server to test
+global.email = process.env.PUP_TEST_EMAIL;
+global.token; // Will hold the JWT token for the auth users
 
 
+console.log("\n++++++++++++++ TESTING +++++++++++++++++")
+console.log('PUP_TEST_URL >>>', global.server.app);
+console.log('EMAIL_PUP_TEST_EMAIL >>>', global.email);
 
-console.log("\n++++++++++++++ START TESTS +++++++++++++++++")
 describe("GET /ping --> 01_user.js ", function () {
   it("access ping", function (done) {
-    server
+    global.server
       .get("/ping")
       .expect(200)
       .end(done);
@@ -21,9 +33,9 @@ describe("GET /ping --> 01_user.js ", function () {
 
 describe('POST /code --> 01_user.js', function() {
   it('sends a code to a user\'s email', function(done) {
-      server
+      global.server
         .post('/code')
-        .send({email:email})
+        .send({email:global.email})
         .expect(201)
         .end(function(err,res){
           let obj = JSON.parse(res.text);
@@ -44,9 +56,9 @@ describe('POST /code --> 01_user.js', function() {
 
 describe('POST /me --> 01_user.js', function() {
   it('gets or creates a new user w/code', function(done) {
-      server
+      global.server
         .post('/me')
-        .send({email:email, code:global.code})
+        .send({email:global.email, code:global.code})
         .expect(200)
         .end(function(err,res){
           let obj = JSON.parse(res.text);
@@ -68,7 +80,7 @@ describe('POST /me --> 01_user.js', function() {
 
 describe('GET /user --> 01_user.js', function () {
   it('gets a user using the JWT token', function (done) {
-    server
+    global.server
       .get('/user')
       .set('Authorization', 'Bearer ' + token)
       .expect(200)
