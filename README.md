@@ -9,7 +9,7 @@ The Simple Expenses Manager using Nodejs/Express.
 
 #### Exports
 The value of JWT_SECRET and DB_URLS are in the private SECRETS project. 
-These must be set prior to starting Nodejs for the appropriate env (dev, stage, prod).
+These must be set prior to starting Nodejs for the appropriate env (dev, beta, prod).
 
 ```BASH
 # JWT_SECRET
@@ -23,8 +23,8 @@ Set the node environment.
 ```BASH
 # production
 export NODE_ENV=production
-# stage
-export NODE_ENV=stage
+# beta
+export NODE_ENV=beta
 # development
 export NODE_ENV=
 ```
@@ -41,24 +41,24 @@ Set the version number in package.json prior to all Git Repo pushes.
 
 
 ## Deployment 
-Steps to deploy the backend are based on a simple stage or production process.
+Steps to deploy the backend are based on a simple beta or production process.
 
 
 #### Heroku Deployment
 The Heroku console is setup to pull from GitHub. Use the Heroku console to pull the proper 
-branch (stage or master) to the stage or production Heroku servers.
+branch (beta or master) to the beta or production Heroku servers.
 
 #### Local repo
 1. Only work with and push the development_(date) branch
 2. Change the package.json version before git add
 
-#### Stage - remote repo
-Stage is tested using the TEST scripts and Postman. The Ionic codebase only attaches to dev and prod.
-1. Merge development_(dttm) to stage on GitHub
-2. Pull stage from Heroku to the Heroku stage project
+#### Beta - remote repo
+Beta is tested using the TEST scripts and Postman. The Ionic codebase only attaches to dev and prod.
+1. Merge development_(dttm) to beta on GitHub
+2. Pull beta from Heroku to the Heroku beta project
 
 #### Production - remote repo
-1. Merge stage to master on GitHub
+1. Merge beta to master on GitHub
 2. Pull master from Heroku to the Heroku production project
 
 ## Javascript Documentation
