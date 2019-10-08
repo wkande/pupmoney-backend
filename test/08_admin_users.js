@@ -1,13 +1,9 @@
-
-var supertest = require("supertest");
 var should = require("should");
-const url = process.env.PUP_TEST_URL || 'http://192.168.0.14:3000';
-var server = supertest.agent(url);
 
 
 describe('GET /admin/users --> 08_admin_users.js', function () {
     it('gets a list of users', function (done) {
-        server
+        global.server
             .get('/admin/users')
             .set('Authorization', 'Bearer ' + global.token)
             .expect(200)

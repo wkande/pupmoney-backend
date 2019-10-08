@@ -1,13 +1,9 @@
-
-var supertest = require("supertest");
 var should = require("should");
-const url = process.env.PUP_TEST_URL || 'http://192.168.0.14:3000';
-var server = supertest.agent(url);
 
 
 describe('GET /categories --> 05_categories.js', function () {
     it('gets a list of categories', function (done) {
-        server
+        global.server
             .get('/categories?q=&dttmStart=2010-01-02&dttmEnd=2020-01-02')
             .set('Authorization', 'Bearer ' + global.token)
             .set('wallet', JSON.stringify(global.wallet))
@@ -30,7 +26,7 @@ describe('GET /categories --> 05_categories.js', function () {
 
 describe('GET /categories/:cat_id --> 05_categories.js', function () {
     it('get a category', function (done) {
-        server
+        global.server
             .get('/categories/'+global.category_id)
             .set('Authorization', 'Bearer ' + global.token)
             .set('wallet', JSON.stringify(global.wallet))
@@ -52,7 +48,7 @@ describe('GET /categories/:cat_id --> 05_categories.js', function () {
 
 describe('POST /categories --> 05_categories.js', function () {
     it('post a category', function (done) {
-        server
+        global.server
             .post('/categories')
             .send({'name':'My new category'})
             .set('wallet', JSON.stringify(global.wallet))
@@ -78,7 +74,7 @@ describe('POST /categories --> 05_categories.js', function () {
 
 describe('PATCH /categories/:cat_id/name --> 05_categories.js', function () {
     it('patch a category name', function (done) {
-        server
+        global.server
             .patch('/categories/'+global.temp_category_id+'/name')
             .send({'name':'My new categgory name'})
             .set('wallet', JSON.stringify(global.wallet))
@@ -101,7 +97,7 @@ describe('PATCH /categories/:cat_id/name --> 05_categories.js', function () {
 
 describe('PATCH /categories/:cat_id/vendors --> 05_categories.js', function () {
     it('patch a category vendor array', function (done) {
-        server
+        global.server
             .patch('/categories/'+global.temp_category_id+'/vendors')
             .send({'vendors':'{"One", "Two"}'})
             .set('wallet', JSON.stringify(global.wallet))
@@ -126,7 +122,7 @@ describe('PATCH /categories/:cat_id/vendors --> 05_categories.js', function () {
 
 describe('DELETE /categories/:cat_id --> 05_categories.js', function () {
     it('delete a category', function (done) {
-        server
+        global.server
             .delete('/categories/'+global.temp_category_id)
             .set('Authorization', 'Bearer ' + global.token)
             .set('wallet', JSON.stringify(global.wallet))
