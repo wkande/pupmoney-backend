@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const POSTGRESQL = require('../providers/postgresql');
 const postgresql = new POSTGRESQL();
-const sendmail = require('sendmail')({silent: true});
+//const sendmail = require('sendmail')({silent: true});
 const debug = require('debug')('pup:code.js');
 
 
@@ -28,7 +28,15 @@ router.post('/', function(req, res, next) {
             };
             const data = await postgresql.shards[0].query(query);
 
-            sendmail({
+            let obj = {data:{email:email, code:null}}
+            if(process.env.NODE_ENV != 'production') obj.data.code = code;
+            res.status(201).send(obj);
+
+            /** TODO
+             * Move away from sendmail and use and SMS provider.
+             */
+
+            /*sendmail({
                 from: 'PupMoney <supportme@pupmoney.com>',
                 to: email,
                 subject: 'PupMoney Code Request',
@@ -42,6 +50,7 @@ router.post('/', function(req, res, next) {
                 PupMoney Support`,
               }, function(err, reply) {
                     if(err){ 
+                        console.log(err);
                         err.message = 'Email not sent to '+email+'. - '+err.message;
                         return next(err);
                     }
@@ -49,9 +58,10 @@ router.post('/', function(req, res, next) {
                     if(process.env.NODE_ENV != 'production') obj.data.code = code;
                     res.status(201).send(obj);
 
-            });
+            });*/
         }
         catch(err){
+            console.log(err);
             next(err);
         }
     }
