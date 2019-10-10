@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const POSTGRESQL = require('../providers/postgresql');
 const postgresql = new POSTGRESQL();
-//const sendmail = require('sendmail')({silent: true});
+var nodemailer = require('nodemailer');
 const debug = require('debug')('pup:code.js');
+
 
 
 /**
@@ -28,37 +29,39 @@ router.post('/', function(req, res, next) {
             };
             const data = await postgresql.shards[0].query(query);
 
-            let obj = {data:{email:email, code:null}}
-            if(process.env.NODE_ENV != 'production') obj.data.code = code;
-            res.status(201).send(obj);
+            var transporter = nodemailer.createTransport({
+                service: 'hotmail',
+                auth: {
+                  user: 'pupmoney@hotmail.com',
+                  pass: process.env.EMAIL_PSWD
+                }
+              });
 
-            /** TODO
-             * Move away from sendmail and use and SMS provider.
-             */
-
-            /*sendmail({
-                from: 'PupMoney <supportme@pupmoney.com>',
+            var mailOptions = {
+                from: 'pupmoney@hotmail.com',
                 to: email,
-                subject: 'PupMoney Code Request',
-                text: `PupMoney is an expenses management tool. A code `+code+` was requested for this email address. If you did not request the code 
-          do nothing. If you are having trouble please respond 
-          to this email and a help desk ticket will automatically be generated for you.\n\nRegards,\nPupMoney Support`,
-                html: `PupMoney is an expenses management tool. 
-                A code <span style="font-size:medium"><b>`+code+`</b></span> was requested for this email address. If you did not request the code 
-                do nothing.  
-                If you are having trouble please respond to this email and a help desk ticket will automatically be generated for you.<br><br>Regards,<br>
-                PupMoney Support`,
-              }, function(err, reply) {
-                    if(err){ 
-                        console.log(err);
-                        err.message = 'Email not sent to '+email+'. - '+err.message;
-                        return next(err);
-                    }
+                subject: 'PupMoney Login Code',
+                text: `<div style="color:blue;font-size:medium">PupMoney is an expenses management tool. A code `+code+` was requested for this email address. If you did not request the code 
+                do nothing. If you are having trouble please respond 
+                to this email and a help desk ticket will automatically be generated for you.\n\nRegards,\nPupMoney Support`,
+                      html: `PupMoney is an expenses management tool. 
+                      A code <b>`+code+`</b> was requested for this email address. If you did not request the code 
+                      do nothing.  
+                      If you are having trouble please respond to this email and a help desk ticket will automatically be generated for you.<br><br>Regards,<br>
+                      PupMoney Support</div>`
+              };
+
+            transporter.sendMail(mailOptions, function(err, info){
+                if (err) {
+                    console.log(err);
+                    err.message = 'Email not sent to '+email+'. - '+err.message;
+                    return next(err);
+                } else {
                     let obj = {data:{email:email, code:null}}
                     if(process.env.NODE_ENV != 'production') obj.data.code = code;
                     res.status(201).send(obj);
-
-            });*/
+                }
+            });
         }
         catch(err){
             console.log(err);
