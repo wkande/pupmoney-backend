@@ -3,9 +3,11 @@ var should = require("should");
 
 describe('GET /wallets --> 02_wallets.js', function () {
     it('gets a list of wallets', function (done) {
+        this.timeout(6000);
         global.server
             .get('/wallets')
             .set('Authorization', 'Bearer ' + global.token)
+            .timeout(5000)
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
@@ -25,9 +27,11 @@ describe('GET /wallets --> 02_wallets.js', function () {
 
 describe('GET /wallet/:id --> 02_wallets.js', function () {
     it('gets a wallet', function (done) {
+        this.timeout(6000);
         global.server
             .get('/wallets/'+global.wallet.id)
             .set('Authorization', 'Bearer ' + global.token)
+            .timeout(5000)
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
@@ -46,6 +50,7 @@ describe('GET /wallet/:id --> 02_wallets.js', function () {
 
 describe('POST /wallet --> 02_wallets.js', function () {
     it('post a wallet', function (done) {
+        this.timeout(6000);
         global.server
             .post('/wallets')
             .send({ 'name':'My new wallet', 
@@ -54,6 +59,7 @@ describe('POST /wallet --> 02_wallets.js', function () {
             })
             .set('Authorization', 'Bearer ' + global.token)
             .set('Content-Type', 'application/x-www-form-urlencoded')
+            .timeout(5000)
             .expect(201)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
@@ -74,6 +80,7 @@ describe('POST /wallet --> 02_wallets.js', function () {
 
 describe('PATCH /wallets/:id --> 02_wallet.js', function () {
     it('patch name and shares on a wallet id: ', function (done) {
+        this.timeout(6000);
         let body = {};
         global.server
             .patch('/wallets/'+global.temp_wallet_id)
@@ -83,6 +90,7 @@ describe('PATCH /wallets/:id --> 02_wallet.js', function () {
             })
             .set('Authorization', 'Bearer ' + global.token)
             .set('Content-Type', 'application/x-www-form-urlencoded')
+            .timeout(5000)
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
@@ -100,6 +108,7 @@ describe('PATCH /wallets/:id --> 02_wallet.js', function () {
 
 describe('PATCH /wallets/:id/currency --> 02_wallet.js', function () {
     it('patch currency on a wallet id: ', function (done) {
+        this.timeout(6000);
         let body = {};
         global.server
             .patch('/wallets/'+global.temp_wallet_id+'/currency')
@@ -107,6 +116,7 @@ describe('PATCH /wallets/:id/currency --> 02_wallet.js', function () {
             })
             .set('Authorization', 'Bearer ' + global.token)
             .set('Content-Type', 'application/x-www-form-urlencoded')
+            .timeout(5000)
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
@@ -125,9 +135,11 @@ describe('PATCH /wallets/:id/currency --> 02_wallet.js', function () {
 
 describe('DELETE /wallet --> 02_wallets.js', function () {
     it('delete a wallet', function (done) {
+        this.timeout(6000);
         global.server
             .delete('/wallets/'+global.temp_wallet_id)
             .set('Authorization', 'Bearer ' + global.token)
+            .timeout(5000)
             .expect(200)
             .end(function (err, res) {
                 let obj = JSON.parse(res.text);
