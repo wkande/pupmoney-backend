@@ -23,9 +23,9 @@
   },
   "devDependencies": {
     "jsdoc": "^3.5.5",
-    "mocha": "^6.0.2",
+    "mocha": "^6.2.1",
     "should": "^13.2.3",
-    "supertest": "^3.3.0"
+    "supertest": "^4.0.2"
   },
   "author": "Warren Anderson",
   "license": "Copyright 2019 Wyoming Software, Inc. All rights reserved"
