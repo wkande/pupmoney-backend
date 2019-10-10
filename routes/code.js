@@ -42,6 +42,7 @@ router.post('/', function(req, res, next) {
                 PupMoney Support`,
               }, function(err, reply) {
                     if(err){ 
+                        console.log(err);
                         err.message = 'Email not sent to '+email+'. - '+err.message;
                         return next(err);
                     }
@@ -52,6 +53,7 @@ router.post('/', function(req, res, next) {
             });
         }
         catch(err){
+            console.log(err);
             next(err);
         }
     }
