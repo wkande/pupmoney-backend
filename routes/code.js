@@ -18,6 +18,7 @@ router.post('/', function(req, res, next) {
     async function sendCode(){
         try{
             debug('code.js post', req.body);
+            debug('EMAIL: ', req.body.email)
             let email = req.body.email;
             var code = generateCode();
 
@@ -54,10 +55,16 @@ router.post('/', function(req, res, next) {
             transporter.sendMail(mailOptions, function(err, info){
                 if (err) {
                     console.log(err);
+                    err.statusCode = 502
+                    err.statusMsg = 'Email not sent to '+email+'. - '+err.message;
                     err.message = 'Email not sent to '+email+'. - '+err.message;
                     return next(err);
                 } else {
-                    let obj = {data:{email:email, code:null}}
+                    let obj = {
+                        statusCode :201,
+                        statusMsg: 'OK',
+                        data:{email:email, code:null}
+                    }
                     if(process.env.NODE_ENV != 'production') obj.data.code = code;
                     res.status(201).send(obj);
                 }
@@ -65,6 +72,9 @@ router.post('/', function(req, res, next) {
         }
         catch(err){
             console.log(err);
+            err.statusCode = 501;
+            err.statusMsg = "Error creating DB record";
+            err.note = "Possible cause: Be sure to send an email address in the body";
             next(err);
         }
     }

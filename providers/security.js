@@ -71,7 +71,7 @@ SECURITY.prototype.walletCheck = function(req, res, next){
                         }
                     }
                     // If we get here the wallet_id is unauthorized
-                    let msg = {statusCode:'401', statusMsg:'Access to the wallet_id is not authorized',
+                    let msg = {statusCode:401, statusMsg:'Access to the wallet_id is not authorized',
                             location:'SECURITY.walletCheck.inner',
                             note:'Invalid wallet ID.'
                         };
@@ -83,7 +83,7 @@ SECURITY.prototype.walletCheck = function(req, res, next){
         });
     }
     catch(err){
-        let msg = {statusCode:'400', statusMsg:err.toString(),
+        let msg = {statusCode:400, statusMsg:err.toString(),
                 location:'SECURITY.walletCheck.outer',
                 note:'Be sure to send the JWT token and the wallet.'
             };
@@ -126,7 +126,7 @@ SECURITY.prototype.userCheck = function(req, res, next){
         });
     }
     catch(err){
-        let msg = {statusCode:'400', statusMsg:err.toString(),
+        let msg = {statusCode:400, statusMsg:err.toString(),
                     location:'SECURITY.userCheck',
                     note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
                 };
@@ -180,7 +180,7 @@ SECURITY.prototype.adminCheck = function(req, res, next){
         });
     }
     catch(err){
-        let msg = {statusCode:'400', statusMsg:err.toString(),
+        let msg = {statusCode:400, statusMsg:err.toString(),
             location:'SECURITY.adminCheck',
             note:'Be sure to send the JWT token. Most PupMoney APIs will not work within a browser URL, try Postman.'
         };
