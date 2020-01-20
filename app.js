@@ -32,6 +32,7 @@ const security = new SECURITY();
 const app = express();
 const loggly = require('./providers/loggly');
 loggly.info({ msg: "STARTUP", dttm: new Date() });
+const css = 'font-weight:bold;font-size:medium';
 
 
 // ****** Init the connection pool to PostgreSQL shards ******* //
@@ -41,8 +42,13 @@ postgresql.init();
 // ****** CORS SETUP ******* //
 app.use(cors());
 
+
 // ****** Stops caching of data for all endpoints  ******* //
 app.disable('etag');
+
+
+
+
 
 // ****** SYSTEM ROUTES ******* //
 app.use(logger('dev'));
@@ -51,6 +57,34 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// ****** DEV ONLY ******** //
+if(process.env.NODE_ENV != 'production'){
+    app.use('/*', (req, res, next) => {
+        try{
+            console.clear();
+            console.log('\n>>> REQUEST OBJECT -------------------------------------');
+            if(req.headers.wallet){
+                console.log('\n%cWallet', css);
+                console.dir(JSON.parse(req.headers.wallet));
+            }
+                
+            console.log('\n%cHeaders', css)
+            console.dir(req.headers);
+            console.log('\n%cBody', css)
+            console.dir(req.body);
+            console.log('\n%cQuery', css)
+            console.dir(req.query);
+        }
+        catch(err){
+            console.error(err);
+        }
+        finally{
+            console.log('\n>>> -------------- -------------------------------------\n');
+            next();
+        }
+    });
+}
 
 
 // ****** SECURITY ROUTES ******* //
@@ -96,13 +130,16 @@ if (process.env.NODE_ENV != 'prod') {
  * All responses in PupMoney have a statusCode and statusMessage in them whether they are an
  * error or successful response.
  */
-app.use(function (req, res, next) {
-    res.status(404).send({
-        statusCode: 404,
-        statusMessage: "Handler not found.",
-        note: "PupMoney APIs."
-    })
-});
+if(process.env.NODE_ENV != 'production'){
+    app.use(function (req, res, next) {
+        res.status(404).send({
+            statusCode: 404,
+            statusMessage: "Handler not found.",
+            statusMsg: "Handler not found.",
+            note: "Did not locate the requested path."
+        })
+    });
+}
 
 
 /**
@@ -116,7 +153,8 @@ app.use((err, req, res, next) => {
     if(res.statusCode === 200){
         res.statusCode = 500;
     }
-    res.status(res.statusCode).send({message:err.toString()});
+    res.status(res.statusCode).send(err);
+    //res.status(res.statusCode).send({message:err.toString()});
 });
 
 
