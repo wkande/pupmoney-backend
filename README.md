@@ -2,13 +2,11 @@
 The Simple Expenses Manager using Nodejs/Express.
 
 
-
-
 ## Nodejs startup
 
 
 #### Exports
-The value of JWT_SECRET and DB_URLS are in the private SECRETS project. 
+The value of JWT_SECRET, DB_URLS, and EMAIL_PSWD are in the private SECRETS project. 
 These must be set prior to starting Nodejs for the appropriate env (dev, beta, prod).
 
 ```BASH
@@ -16,6 +14,8 @@ These must be set prior to starting Nodejs for the appropriate env (dev, beta, p
 export JWT_SECRET=<from-secret-project>
 # DB_URLS
 export DB_URLS=<from-secret-project>
+# EMAIL_PSWD
+export EMAIL_PSWD=<from-secret-project>
 ```
 
 

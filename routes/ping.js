@@ -20,14 +20,19 @@ router.get('/', function(req, res, next) {
                 versions.push(postgresql.getDatabaseVersion(i));
             }
 
-            res.status(200).send({statusCode:200, 
+            let body = {statusCode:200, statusMessage:"OK",
                 ping:"pong",
                 NODE_ENV:process.env.NODE_ENV,
                 node_version:process.version,
                 note:"PupMoney APIs.",
                 shard_versions:versions,
                 pup_version:pjson.version
-            })
+            }
+            res.status(200).send(body)
+            if(process.env.NODE_ENV != 'production'){ 
+                console.log('Response Body')
+                console.dir(body);
+            }
         }
         catch(err){
             next(err);
